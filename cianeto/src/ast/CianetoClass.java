@@ -1,4 +1,6 @@
 package ast;
+
+import java.util.*;	
 /*
  * Krakatoa Class
  */
@@ -15,8 +17,8 @@ public class CianetoClass extends Type {
 
    private String name;
    private CianetoClass superclass;
-   // private FieldList fieldList;
-   // private MethodList publicMethodList, privateMethodList;
+   private ArrayList<Field> fieldList;
+   private ArrayList<Method> publicMethodList, privateMethodList;
    // métodos públicos get e set para obter e iniciar as variáveis acima,
    // entre outros métodos
 }
