@@ -12,11 +12,11 @@ public class Term {
 	}
 	/*public void genC( PW pw, boolean putParenthesis ) {
     	 
-     }
+     }*/
       // new method: the type of the expression
      public Type getType() {
-    	 	//return new Type();
-     }*/
+    	 	return firstSigFac.getType();
+     }
 	SignalFactor firstSigFac;
 	ArrayList<Token> listOp;
 	ArrayList<SignalFactor> listSigFac;

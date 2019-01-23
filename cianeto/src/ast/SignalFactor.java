@@ -7,13 +7,13 @@ public class SignalFactor {
 		this.signal = signal;
 		this.factor = factor;
 	}
-	/*public void genC( PW pw, boolean putParenthesis ) {
+	public void genC( PW pw, boolean putParenthesis ) {
     	 
      }
       // new method: the type of the expression
      public Type getType() {
-    	 	//return new Type();
-     }*/
+    	 	return factor.getType();
+     }
 	Token signal;
 	Factor factor;
 	}

@@ -145,6 +145,7 @@ public class Compiler {
 		if ( lexer.token == Token.ID && lexer.getStringValue().equals("open") ) {
 			// open class
 		}
+		
 		if ( lexer.token != Token.CLASS ) error("'class' expected");
 		lexer.nextToken();
 		if ( lexer.token != Token.ID )
@@ -152,6 +153,7 @@ public class Compiler {
 		String className = lexer.getStringValue();
 		lexer.nextToken();
 		if ( lexer.token == Token.EXTENDS ) {
+			//System.out.println("not enter");
 			lexer.nextToken();
 			if ( lexer.token != Token.ID )
 				error("Identifier expected");
@@ -159,21 +161,26 @@ public class Compiler {
 
 			lexer.nextToken();
 		}
-
+		//System.out.println(lexer.token);
 		memberList();
-		if ( lexer.token != Token.END)
+		//System.out.println(lexer.token);
+		if ( lexer.token != Token.END) {
 			error("'end' expected");
+		}
 		lexer.nextToken();
 
 	}
 
 	private void memberList() {
 		while ( true ) {
+			System.out.println(lexer.token);
 			qualifier();
 			if ( lexer.token == Token.VAR ) {
+				//System.out.println("aaaaaaaaaaaaaaaaaaaaaa");
 				fieldDec();
 			}
 			else if ( lexer.token == Token.FUNC ) {
+				
 				methodDec();
 			}
 			else {
@@ -360,7 +367,7 @@ public class Compiler {
 	}
 
 	private void expr() {
-
+			
 	}
 
 	private void fieldDec() {
@@ -372,10 +379,13 @@ public class Compiler {
 		else {
 			while ( lexer.token == Token.ID  ) {
 				lexer.nextToken();
+				
 				if ( lexer.token == Token.COMMA ) {
+					System.out.println("Entrei aqui");
 					lexer.nextToken();
 				}
 				else {
+					lexer.nextToken();
 					break;
 				}
 			}
@@ -385,10 +395,10 @@ public class Compiler {
 
 	private void type() {
 		if ( lexer.token == Token.INT || lexer.token == Token.BOOLEAN || lexer.token == Token.STRING ) {
-			next();
+			lexer.nextToken();
 		}
 		else if ( lexer.token == Token.ID ) {
-			next();
+			lexer.nextToken();
 		}
 		else {
 			this.error("A type was expected");

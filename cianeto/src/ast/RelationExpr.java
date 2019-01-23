@@ -1,11 +1,12 @@
 package ast;
 
-import java.util.*;
-public class SimpleExpr extends Expr {
+import lexer.Token;
+public class RelationExpr extends Expr {
      
-	public SimpleExpr(SumSubExpr firstExpr, ArrayList<SumSubExpr> listExpr) {
+	public RelationExpr(SimpleExpr firstExpr, Token rel, SimpleExpr lastExpr) {
 		this.firstExpr = firstExpr;
-		this.listExpr = listExpr;
+		this.lastExpr = lastExpr;
+		this.rel = rel;
 	}
 	public void genC( PW pw, boolean putParenthesis ) {
     	 
@@ -14,6 +15,6 @@ public class SimpleExpr extends Expr {
      public Type getType() {
     	 	return firstExpr.getType();
      }
-     SumSubExpr firstExpr;
-     ArrayList<SumSubExpr> listExpr;
+     SimpleExpr firstExpr, lastExpr;
+     Token rel;
 }

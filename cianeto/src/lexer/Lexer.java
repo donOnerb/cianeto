@@ -46,7 +46,7 @@ public class Lexer {
         while (  (ch = input[tokenPos]) == ' ' || ch == '\r' ||
                  ch == '\t' || ch == '\n')  {
             // count the number of lines
-          if ( ch == '\n')
+        	if ( ch == '\n')
             lineNumber++;
           tokenPos++;
           }
@@ -260,6 +260,8 @@ public class Lexer {
             }
           }
         beforeLastTokenPos = lastTokenPos;
+        
+        //System.out.println(token);
     }
 
       // return the line number of the last token got with getToken()

@@ -11,8 +11,13 @@ public class PrimaryExpr {
 		this.readExpr = readExpr;
 	}
     /*abstract public void genC( PW pw, boolean putParenthesis );
-      // new method: the type of the expression
-    abstract public Type getType();*/
+      // new method: the type of the expression*/
+    public Type getType(){
+    	if(readExpr != null)
+    		return readExpr.getType();
+    	else
+    		return Type.intType;
+    }
 	String idColon;
 	String firstId; 
 	String LastId; 

@@ -13,8 +13,8 @@ public class SumSubExpr {
     	 
      }*/
       // new method: the type of the expression
-     public Type getType() {
-    	return ();
+    public Type getType() {
+    	return firstTerm.getType();
      }
 	Term firstTerm;
 	ArrayList<Token> listOp;
