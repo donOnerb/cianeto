@@ -149,14 +149,14 @@ public class Compiler {
 		if ( lexer.token != Token.CLASS ) error("'class' expected and get " +lexer.token);
 		lexer.nextToken();
 		if ( lexer.token != Token.ID )
-			error("Identifier expected and get " +lexer.token);
+			error("Identifier expected");
 		String className = lexer.getStringValue();
 		lexer.nextToken();
 		if ( lexer.token == Token.EXTENDS ) {
 			//System.out.println("not enter");
 			lexer.nextToken();
 			if ( lexer.token != Token.ID )
-				error("Identifier expected and get " +lexer.token);
+				error("Identifier expected");
 			String superclassName = lexer.getStringValue();
 
 			lexer.nextToken();
@@ -212,10 +212,9 @@ public class Compiler {
 
 			
 		//System.out.println(lexer.token+" AQUI");
-	}else if ( lexer.token == Token.ID ) {
+		 }else if ( lexer.token == Token.ID ) {
 			// unary method
 			lexer.nextToken();
-
 		}
 		
 		else {
@@ -227,12 +226,12 @@ public class Compiler {
 			type();
 		}
 		if ( lexer.token != Token.LEFTCURBRACKET ) {
-			error("'{' expected and get " +lexer.token);
+			error("'{' expected");
 		}
 		next();
 		statementList();
 		if ( lexer.token != Token.RIGHTCURBRACKET ) {
-			error("'}' expected and get " +lexer.token);
+			error("'}' expected");
 		}
 		
 		next();
@@ -357,6 +356,7 @@ public class Compiler {
 			statement();
 		}
 		check(Token.RIGHTCURBRACKET, "'}' was expected and get " +lexer.token);
+		next();
 	}
 
 	private void ifStat() {
@@ -476,6 +476,8 @@ public class Compiler {
 					}else {
 						error("'new', identifier or identifiercolon were expected and get " +lexer.token);
 					}
+				} else if(lexer.token != Token.MULT && lexer.token != Token.DIV && lexer.token != Token.AND) {
+					error("Statement expected" + lexer.token);
 				}
 				
 				break;
@@ -597,11 +599,11 @@ public class Compiler {
 				lexer.nextToken();
 				
 				if ( lexer.token == Token.COMMA ) {
-					//System.out.println("Entrei aqui");
 					lexer.nextToken();
-				}
-				else {
-					//lexer.nextToken();
+				} /*else if (lexer.token == Token.SEMICOLON) {
+					next();
+					break;
+				}*/else {
 					break;
 				}
 			}
