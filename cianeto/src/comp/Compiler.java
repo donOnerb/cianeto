@@ -277,11 +277,12 @@ public class Compiler {
 			assertStat();
 			break;
 		default:
+			
 			if ( lexer.token == Token.ID && lexer.getStringValue().equals("out") ) {
 				writeStat();
-			}
-			else {
+			} else {
 				//System.out.println("Com =");
+				
 				expr();
 				if(lexer.token == Token.ASSIGN) {
 					next();
@@ -296,22 +297,30 @@ public class Compiler {
 			check(Token.SEMICOLON, "';' expected and get " +lexer.token);
 			next();
 		}
-		
 	}
 
 	private void localDec() {
+		boolean flag = true;
+		
 		next();
 		type();
-		check(Token.ID, "A variable name was expected and get " +lexer.token);
+		check(Token.ID, "A variable name was expected and get " + lexer.token);
 		while ( lexer.token == Token.ID ) {
+			flag = false;
 			next();
 			if ( lexer.token == Token.COMMA ) {
+				flag = true;
 				next();
 			}
 			else {
 				break;
 			}
 		}
+		
+		if (flag) {
+			error("Missing identifier");
+		}
+		
 		if ( lexer.token == Token.ASSIGN ) {
 			next();
 			// check if there is just one variable
@@ -592,7 +601,7 @@ public class Compiler {
 					lexer.nextToken();
 				}
 				else {
-					lexer.nextToken();
+					//lexer.nextToken();
 					break;
 				}
 			}
