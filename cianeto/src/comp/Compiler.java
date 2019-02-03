@@ -16,7 +16,8 @@ public class Compiler {
 	// compile must receive an input with an character less than
 	// p_input.lenght
 	public Program compile(char[] input, PrintWriter outError) {
-
+		
+		returnRequiredFlag = false;
 		ArrayList<CompilationError> compilationErrorList = new ArrayList<>();
 		signalError = new ErrorSignaller(outError, compilationErrorList);
 		symbolTable = new SymbolTable();
@@ -223,6 +224,7 @@ public class Compiler {
 		if ( lexer.token == Token.MINUS_GT ) {
 			// method declared a return type
 			lexer.nextToken();
+			returnRequiredFlag = true;
 			type();
 		}
 		if ( lexer.token != Token.LEFTCURBRACKET ) {
@@ -233,6 +235,12 @@ public class Compiler {
 		if ( lexer.token != Token.RIGHTCURBRACKET ) {
 			error("'}' expected");
 		}
+		
+		if ( returnRequiredFlag ) {
+			error("missing 'return' statement");
+		}
+		
+		returnRequiredFlag = false;
 		
 		next();
 
@@ -277,8 +285,11 @@ public class Compiler {
 			break;
 		default:
 			
+			
+			
 			if ( lexer.token == Token.ID && lexer.getStringValue().equals("out") ) {
 				writeStat();
+				checkSemiColon = true;
 			} else {
 				//System.out.println("Com =");
 				
@@ -345,6 +356,7 @@ public class Compiler {
 		//System.out.println("NEM AQUI TO ENTRANDO");
 		next();
 		expr();
+		returnRequiredFlag = false;
 	}
 
 	private void whileStat() {
@@ -463,7 +475,12 @@ public class Compiler {
 				next();
 				if(lexer.token == Token.DOT) {
 					next();
-					if(lexer.token.toString().equals("new")) {
+					
+					if(lexer.getStringValue().equals("new:")) {
+						error("')' expected");	
+					}
+					
+					if(lexer.token == Token.NEW) {
 						next();
 						break;
 					}else if(lexer.token == Token.ID) {
@@ -476,8 +493,6 @@ public class Compiler {
 					}else {
 						error("'new', identifier or identifiercolon were expected and get " +lexer.token);
 					}
-				} else if(lexer.token != Token.MULT && lexer.token != Token.DIV && lexer.token != Token.AND) {
-					error("Statement expected" + lexer.token);
 				}
 				
 				break;
@@ -490,14 +505,14 @@ public class Compiler {
 				next();
 				break;
 			default:
-				if(lexer.token.toString().equals("nil")) {
+				if(lexer.getStringValue().equals("nil")) {
 					next();
 					break;
-				}else if(lexer.token.toString().equals("In")) {
+				}else if(lexer.getStringValue().equals("In")) {
 					next();
 					if(lexer.token == Token.DOT) {
 						next();
-						if(lexer.token.toString().equals("readInt") || lexer.token.toString().equals("readString")) {
+						if(lexer.getStringValue().equals("readInt") || lexer.getStringValue().equals("readString")) {
 							next();
 						}else {
 							error("'readInt' or 'readString' was expected and get " +lexer.token);
@@ -506,7 +521,7 @@ public class Compiler {
 						error("'.' was expected and get " +lexer.token);
 					}
 					break;
-				}else if(lexer.token.toString().equals("self")) {
+				}else if(lexer.getStringValue().equals("self")) {
 					
 					next();
 					
@@ -534,7 +549,7 @@ public class Compiler {
 					}
 					
 					break;
-				}else if(lexer.token.toString().equals("super")) {
+				}else if(lexer.getStringValue().equals("super")) {
 					next();
 					if(lexer.token == Token.DOT) {
 						next();
@@ -589,23 +604,29 @@ public class Compiler {
 		}
 	}
 	private void fieldDec() {
-		lexer.nextToken();
+		boolean flagVirgula = false;
+		
+		lexer.nextToken(); 
 		type();
 		if ( lexer.token != Token.ID ) {
 			this.error("A variable name was expected and get " +lexer.token);
 		}
 		else {
-			while ( lexer.token == Token.ID  ) {
+			while ( lexer.token == Token.ID ) {
+				flagVirgula = false;
 				lexer.nextToken();
 				
 				if ( lexer.token == Token.COMMA ) {
+					flagVirgula = true;
 					lexer.nextToken();
-				} /*else if (lexer.token == Token.SEMICOLON) {
+				}else {
 					next();
 					break;
-				}*/else {
-					break;
 				}
+			}
+			
+			if (flagVirgula) {
+				error("esperado 'id', mas recebido ';'");
 			}
 		}
 
@@ -704,5 +725,7 @@ public class Compiler {
 	private SymbolTable		symbolTable;
 	private Lexer			lexer;
 	private ErrorSignaller	signalError;
+	private boolean returnRequiredFlag; 
+	
 
 }
