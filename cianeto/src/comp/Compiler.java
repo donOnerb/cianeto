@@ -619,8 +619,10 @@ public class Compiler {
 				if ( lexer.token == Token.COMMA ) {
 					flagVirgula = true;
 					lexer.nextToken();
-				}else {
+				} else if( lexer.token == Token.SEMICOLON ) {
 					next();
+					break;
+				} else {
 					break;
 				}
 			}
