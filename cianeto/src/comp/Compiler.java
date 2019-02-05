@@ -144,7 +144,7 @@ public class Compiler {
 
 	private void classDec() {
 		if ( lexer.token == Token.ID && lexer.getStringValue().equals("open") ) {
-			// open class
+			next();
 		}
 		
 		if ( lexer.token != Token.CLASS ) error("'class' expected and get " +lexer.token);
@@ -304,7 +304,8 @@ public class Compiler {
 
 		}
 		if ( checkSemiColon ) {
-			check(Token.SEMICOLON, "';' expected and get " +lexer.token);
+			check(Token.SEMICOLON, "';' missing");
+			//signalError.showError("';' missing", true);
 			next();
 		}
 	}
@@ -380,6 +381,7 @@ public class Compiler {
 			statement();
 		}
 		check(Token.RIGHTCURBRACKET, "'}' was expected and get " +lexer.token);
+		next();
 		if ( lexer.token == Token.ELSE ) {
 			next();
 			check(Token.LEFTCURBRACKET, "'{' expected after 'else'");
@@ -388,6 +390,7 @@ public class Compiler {
 				statement();
 			}
 			check(Token.RIGHTCURBRACKET, "'}' was expected and get " +lexer.token);
+			next();
 		}
 	}
 
