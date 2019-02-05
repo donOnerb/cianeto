@@ -7,7 +7,7 @@ class Program
        var Int i;
        I = 0;      //#
        
-       Out.println: i
+       Out.println: i;
     }
 
 end
