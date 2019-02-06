@@ -173,7 +173,6 @@ public class Compiler {
 		/* Verifica se classe ainda não existe (Verifica na hash global por ser uma classe)
 		*/
 		Object type;
-		
 		if ((type = symbolTable.getInGlobal(className)) != null){
 			if ((type instanceof CianetoClass)){
 				error("Class already declared");
@@ -202,15 +201,21 @@ public class Compiler {
 				error("Class " + classe.getName() + " is inheriting from itself");
 			}
 			
-			//
-			
 			/* Verifica se a superclasse existe e se é possível herdar da superclasse (se ela é open)
 			*/
 			if ((type = symbolTable.getInGlobal(superclassName)) != null){
 				if ((type instanceof CianetoClass)){
+					CianetoClass classeNova = (CianetoClass)type;
+					if (!classeNova.getOpen())
+						error("Impossible to inherit class " + classeNova.getName() + " because it is not open");
+						
+					classe.setSuperclass(classeNova);			
 					
 				}
+			} else {
+				error("Superclass doesn't exists");
 			} 
+			
 			
 			lexer.nextToken();
 		}
@@ -236,7 +241,7 @@ public class Compiler {
 				error("Method 'run' was not found in class 'Program'");
 		}
 		
-		
+		symbolTable.removeLocalClassIdent();
 		lexer.nextToken();
 		currentClass = null;
 	}
@@ -253,7 +258,7 @@ public class Compiler {
 			if ( lexer.token == Token.VAR ) {
 				Field campo = fieldDec(qualifiers);
 				
-				// Verifica se field não voi declarado público
+				// Verifica se field não vai declarado público
 				if (campo.getQualifier() == Token.PUBLIC)
 					signalError.showError("Attempt to declare public instance variable", true);
 				
@@ -298,6 +303,11 @@ public class Compiler {
 		Type tipo = null; 
 		String nomeMetodo = null;
 		
+		Token qualifierEncapsulation = Token.PUBLIC;
+		Token qualifierOverride = null;
+		Token qualifierFinal = null;
+		Method novo;
+
 		if ( lexer.token == Token.IDCOLON ) {
 				// keyword method. It has parameters
 				// Retira o ':' do nome do metodo
@@ -315,10 +325,21 @@ public class Compiler {
 		}else if ( lexer.token == Token.ID ) {
 			nomeMetodo = lexer.getStringValue();
 			
+			// Verifica se o método está sendo sobrescrito
+			Object type;
+			if ((type = symbolTable.getInLocalClass(nomeMetodo)) != null){
+				if (type instanceof Method) {
+					Method metodo  = (Method)type;
+					error("Method " + metodo.getId() + "is being redeclared");
+				}
+			}
+			
+			
 			// Verifica se o metodo 'run' da classe 'Program' não é private
 			if (currentClass.equals("Program") && nomeMetodo.equals("run") && qualifiers.contains(Token.PRIVATE))
 				error("Method 'run' of class 'Program' cannot be private");
-			
+				
+
 			// unary method
 			lexer.nextToken();
 		}
@@ -326,6 +347,22 @@ public class Compiler {
 		else {
 			error("An identifier or identifer: was expected after 'func'");
 		}
+		
+		// Leitura qualifiers
+		for (Token qualify : qualifiers) {
+			if (qualify == Token.PUBLIC)
+				qualifierEncapsulation = Token.PUBLIC;
+				
+			if (qualify == Token.PRIVATE)
+				qualifierEncapsulation = Token.PRIVATE;
+				
+			if (qualify == Token.OVERRIDE)
+				qualifierOverride = Token.OVERRIDE;
+			
+			if (qualify == Token.FINAL)
+				qualifierFinal = Token.FINAL;
+		}	
+		
 		if ( lexer.token == Token.MINUS_GT ) {
 			// method declared a return type
 			if (currentClass.equals("Program") && nomeMetodo.equals("run"))
@@ -335,6 +372,10 @@ public class Compiler {
 			returnRequiredFlag = true;
 			tipo = type();
 		}
+		
+		novo = new Method(parametros, tipo, nomeMetodo, qualifierEncapsulation, qualifierOverride, qualifierFinal);
+		symbolTable.putInLocalClass(novo.getId(), novo);
+				
 		if ( lexer.token != Token.LEFTCURBRACKET ) {
 			error("'{' expected");
 		}
@@ -351,25 +392,6 @@ public class Compiler {
 		returnRequiredFlag = false;
 		
 		next();
-	
-		Token qualifierEncapsulation = Token.PUBLIC;
-		Token qualifierOverride = null;
-		Token qualifierFinal = null;
-	
-		for (Token qualify : qualifiers) {
-			if (qualify == Token.PUBLIC)
-				qualifierEncapsulation = Token.PUBLIC;
-				
-			if (qualify == Token.PRIVATE)
-				qualifierEncapsulation = Token.PRIVATE;
-				
-			if (qualify == Token.OVERRIDE)
-				qualifierOverride = Token.OVERRIDE;
-			
-			if (qualify == Token.FINAL)
-				qualifierFinal = Token.FINAL;
-		}	
-		Method novo = new Method(parametros, tipo, nomeMetodo, qualifierEncapsulation, qualifierOverride, qualifierFinal);
 		
 		return novo;
 	
@@ -755,6 +777,21 @@ public class Compiler {
 		else {
 			while ( lexer.token == Token.ID ) {
 				flagVirgula = false;
+				String nomeAtributo = lexer.getStringValue(); 
+				
+				// Verifica se a variavel se existe algum objeto com o mesmo nome na hash local da classe
+				if (symbolTable.getInLocalClass(nomeAtributo) != null)
+					error("Variable '" + nomeAtributo + "' is being redeclared");
+				
+				// Caso contrário é inserida na hash local da classe
+				Token qualify = Token.PRIVATE;
+				for (Token quali : qualifiers) {
+					if (quali == Token.PUBLIC)
+						qualify = Token.PUBLIC;
+				}
+				symbolTable.putInLocalClass(nomeAtributo, new FieldUnico(tipo, nomeAtributo, qualify));
+				
+				
 				idList.add(lexer.getStringValue());
 				
 				lexer.nextToken();
@@ -911,6 +948,22 @@ public class Compiler {
 				|| token == Token.ID || token == Token.LITERALSTRING;
 
 	}
+	
+	private Method buscaMetodoSuperClasse(CianetoClass classe, String nomeMetodo){
+		CianetoClass classeBusca = classe;  
+					
+		while (classeBusca.getSuperclass() != null){
+			classeBusca = classeBusca.getSuperclass();
+			ArrayList<Method> listaDeMetodos = classeBusca.getPublicMethodList();
+			
+			for (Method method : listaDeMetodos) {
+				if (method.getId().equals(nomeMetodo))
+					return method;
+			}			
+		}
+		return null;
+	}
+	
 
 	private SymbolTable		symbolTable;
 	private Lexer			lexer;

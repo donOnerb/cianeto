@@ -8,6 +8,7 @@ public class CianetoClass extends Type {
 
 	public CianetoClass( String name ) {
 		super(name);
+		this.superclass = null;
 	}
 	
 	@Override
