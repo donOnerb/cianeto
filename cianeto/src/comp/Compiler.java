@@ -3,11 +3,9 @@ package comp;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import ast.CianetoClass;
-import ast.LiteralInt;
-import ast.MetaobjectAnnotation;
-import ast.Program;
-import ast.Statement;
+
+import ast.*;
+
 import lexer.Lexer;
 import lexer.Token;
 
@@ -143,15 +141,23 @@ public class Compiler {
 	}
 
 	private void classDec() {
+		boolean open = false;
+		
 		if ( lexer.token == Token.ID && lexer.getStringValue().equals("open") ) {
 			next();
+			open = true;
 		}
 		
 		if ( lexer.token != Token.CLASS ) error("'class' expected and get " +lexer.token);
 		lexer.nextToken();
 		if ( lexer.token != Token.ID )
 			error("Identifier expected");
+		
 		String className = lexer.getStringValue();
+		
+		CianetoClass classe = new CianetoClass(className);
+		classe.setOpen(open);
+		
 		lexer.nextToken();
 		if ( lexer.token == Token.EXTENDS ) {
 			//System.out.println("not enter");
@@ -163,7 +169,7 @@ public class Compiler {
 			lexer.nextToken();
 		}
 		//System.out.println(lexer.token);
-		memberList();
+		memberList(classe);
 		//System.out.println(lexer.token);
 		if ( lexer.token != Token.END) {
 			error("'end' expected and get " +lexer.token);
@@ -172,13 +178,17 @@ public class Compiler {
 
 	}
 
-	private void memberList() {
+	private void memberList(CianetoClass classe) {
+		ArrayList<Field> campos = new ArrayList<Field>();
+		ArrayList<Method> metodosPublicos = new ArrayList<Method>();
+		ArrayList<Method> metodosPrivados = new ArrayList<Method>();
+		
 		while ( true ) {
 			
-			qualifier();
+			ArrayList<Token> qualifiers = qualifier();
 			if ( lexer.token == Token.VAR ) {
 				//System.out.println("aaaaaaaaaaaaaaaaaaaaaa");
-				fieldDec();
+				campos.add(fieldDec(qualifiers));
 			}
 			else if ( lexer.token == Token.FUNC ) {
 				
@@ -606,17 +616,20 @@ public class Compiler {
 			error("A parameter name was expected and get " +lexer.token);
 		}
 	}
-	private void fieldDec() {
+	private Field fieldDec(ArrayList<Token> qualifiers) {
 		boolean flagVirgula = false;
 		
 		lexer.nextToken(); 
-		type();
+		Type tipo = type();
+		ArrayList<String> idList = new ArrayList<String>();
 		if ( lexer.token != Token.ID ) {
 			this.error("A variable name was expected and get " +lexer.token);
 		}
 		else {
 			while ( lexer.token == Token.ID ) {
 				flagVirgula = false;
+				idList.add(lexer.getStringValue());
+				
 				lexer.nextToken();
 				
 				if ( lexer.token == Token.COMMA ) {
@@ -633,49 +646,84 @@ public class Compiler {
 			if (flagVirgula) {
 				error("esperado 'id', mas recebido ';'");
 			}
+			
+			
 		}
 
+		Field campo = new Field();
+		campo.setType(tipo);
+		campo.setIdList(idList);
+		campo.setQualifier(qualifiers.get(0));
+			
+		return(campo);
 	}
 
-	private void type() {
+	private Type type() {
+		Type tipo = null;
+		
 		if ( lexer.token == Token.INT || lexer.token == Token.BOOLEAN || lexer.token == Token.STRING ) {
+			switch(lexer.token) {
+				case INT:
+					tipo = Type.intType;
+					break;
+				case BOOLEAN:
+					tipo = Type.booleanType;
+					break;
+				case STRING:
+					tipo = Type.stringType;
+					break;
+			}
+
 			lexer.nextToken();
 		}
 		else if ( lexer.token == Token.ID ) {
+			tipo = new CianetoClass(lexer.getLiteralStringValue());
 			lexer.nextToken();
 		}
 		else {
 			this.error("A type was expected and get " +lexer.token);
 		}
-
+		return (tipo);
 	}
 
 
-	private void qualifier() {
+	private ArrayList<Token> qualifier() {
+		ArrayList<Token> qualifiers = new ArrayList<Token>();
+		
 		if ( lexer.token == Token.PRIVATE ) {
+			qualifiers.add(Token.PRIVATE);
 			next();
 		}
 		else if ( lexer.token == Token.PUBLIC ) {
+			qualifiers.add(Token.PUBLIC);
 			next();
 		}
 		else if ( lexer.token == Token.OVERRIDE ) {
+			qualifiers.add(Token.OVERRIDE);
 			next();
 			if ( lexer.token == Token.PUBLIC ) {
+				qualifiers.add(Token.PUBLIC);
 				next();
 			}
 		}
 		else if ( lexer.token == Token.FINAL ) {
+			qualifiers.add(Token.FINAL);
 			next();
 			if ( lexer.token == Token.PUBLIC ) {
+				qualifiers.add(Token.PUBLIC);
 				next();
 			}
 			else if ( lexer.token == Token.OVERRIDE ) {
+				qualifiers.add(Token.OVERRIDE);
 				next();
 				if ( lexer.token == Token.PUBLIC ) {
+					qualifiers.add(Token.PUBLIC);
 					next();
 				}
 			}
 		}
+		
+		return qualifiers;
 	}
 	/**
 	 * change this method to 'private'.
