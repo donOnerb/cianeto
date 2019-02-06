@@ -338,8 +338,12 @@ public class Compiler {
 					Method metodo  = (Method)type;
 					error("Method " + metodo.getId() + "is being redeclared");
 				}
+				
+				if (type instanceof FieldUnico) {
+					FieldUnico variavel = (FieldUnico)type;
+					error("Method " + variavel.getId() + " has name equal to an instance variable");
+				}
 			}
-			
 			
 			// Verifica se o metodo 'run' da classe 'Program' não é private
 			if (currentClass.equals("Program") && nomeMetodo.equals("run") && qualifiers.contains(Token.PRIVATE))
@@ -399,8 +403,8 @@ public class Compiler {
 		
 		next();
 		
+		symbolTable.removeLocalIdent();
 		return novo;
-	
 	}
 
 	private void statementList() {
@@ -477,9 +481,23 @@ public class Compiler {
 		boolean flag = true;
 		
 		next();
-		type();
+		
+		Type tipo = null;
+		String nomeVariavel = null;
+		
+		tipo = type();
 		check(Token.ID, "A variable name was expected and get " + lexer.token);
 		while ( lexer.token == Token.ID ) {
+			nomeVariavel = lexer.getStringValue();
+			
+			// Verifica se a variável local está sendo redeclarada
+			Object type;
+			if ((type = symbolTable.getInLocal(nomeVariavel)) != null) {
+				error("Variable " + nomeVariavel + " is being redeclared");
+            }
+			
+			symbolTable.putInLocal(nomeVariavel, new LocalDecUnit(tipo, nomeVariavel));
+				
 			flag = false;
 			next();
 			if ( lexer.token == Token.COMMA ) {
@@ -983,5 +1001,6 @@ public class Compiler {
 	private boolean programClassExists;
 	private String currentClass;
 	private int countWhile;
+	//private String tipoRetorno;
 
 }

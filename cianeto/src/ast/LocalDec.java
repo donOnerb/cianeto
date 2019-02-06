@@ -16,7 +16,32 @@ public class LocalDec extends Statement {
 	public void genC(PW pw) {
 		
 	}
-	Expr expr;
-	Type type;
-	ArrayList<String> idList;
+	
+	public Expr getExpr() {
+		return expr;
+	}
+	
+	public void setExpr(Expr expr) {
+		this.expr = expr;
+	}
+	
+	public Type getType() {
+		return type;
+	}
+	
+	public void setType(Type type) {
+		this.type = type;
+	}
+	
+	public ArrayList<String> getIdList() {
+		return idList;
+	}
+	
+	public void setIdList(ArrayList<String> idList) {
+		this.idList = idList;
+	}
+
+	private Expr expr;
+	private Type type;
+	private ArrayList<String> idList;
 }
