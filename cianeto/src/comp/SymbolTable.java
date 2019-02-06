@@ -3,11 +3,12 @@ import java.util.*;
 
 
 public class SymbolTable {
-	private Hashtable globalTable, localTable;
+	private Hashtable globalTable, localTable, localClassTable;
 	
 	public SymbolTable() {
         globalTable = new Hashtable();
         localTable  = new Hashtable();
+        localClassTable = new Hashtable();
 	}
     
     public Object putInGlobal( String key, Object value ) {
@@ -18,6 +19,10 @@ public class SymbolTable {
        return localTable.put(key, value);
     }
     
+    public Object putInLocalClass( String key, Object value ) {
+        return localClassTable.put(key, value);
+    }
+    
     public Object getInGlobal( String key ) {
        return globalTable.get(key);
     }
@@ -25,6 +30,10 @@ public class SymbolTable {
     public Object getInLocal( String key ) {
        return localTable.get(key);
     }
+    
+    public Object getInLocalClass( String key ) {
+        return localClassTable.get(key);
+     }
     
     public Object get( String key ) {
         // returns the object corresponding to the key. 
@@ -42,5 +51,10 @@ public class SymbolTable {
     public void removeLocalIdent() {
            // remove all local identifiers from the table
          localTable.clear();
+    }
+    
+    public void removeLocalClassIdent() {
+        // remove all local identifiers from the table
+      localClassTable.clear();
     }
 }
