@@ -183,16 +183,17 @@ public class Compiler {
 		ArrayList<Method> metodosPublicos = new ArrayList<Method>();
 		ArrayList<Method> metodosPrivados = new ArrayList<Method>();
 		
+		Method metodo;
+		
 		while ( true ) {
 			
 			ArrayList<Token> qualifiers = qualifier();
 			if ( lexer.token == Token.VAR ) {
-				//System.out.println("aaaaaaaaaaaaaaaaaaaaaa");
 				campos.add(fieldDec(qualifiers));
 			}
 			else if ( lexer.token == Token.FUNC ) {
 				
-				methodDec();
+				methodDec(qualifiers);
 			}
 			else {
 				break;
@@ -214,16 +215,21 @@ public class Compiler {
 		}
 	}
 
-	private void methodDec() {
+	private void methodDec(ArrayList<Token> qualifiers) {
 		lexer.nextToken();
-		 if ( lexer.token == Token.IDCOLON ) {
+		
+		ArrayList<ParamDec> parametros = null;
+		Type tipo = null; 
+		String nomeMetodo = null;
+		
+		if ( lexer.token == Token.IDCOLON ) {
 				// keyword method. It has parameters
+				nomeMetodo = lexer.getStringValue();
 				next();
-				formalParamDec();
-
+				parametros = formalParamDec();
 			
 		//System.out.println(lexer.token+" AQUI");
-		 }else if ( lexer.token == Token.ID ) {
+		}else if ( lexer.token == Token.ID ) {
 			// unary method
 			lexer.nextToken();
 		}
@@ -235,7 +241,7 @@ public class Compiler {
 			// method declared a return type
 			lexer.nextToken();
 			returnRequiredFlag = true;
-			type();
+			tipo = type();
 		}
 		if ( lexer.token != Token.LEFTCURBRACKET ) {
 			error("'{' expected");
@@ -253,7 +259,27 @@ public class Compiler {
 		returnRequiredFlag = false;
 		
 		next();
-
+	
+		Token qualifierEncapsulation = null;
+		Token qualifierOverride = null;
+		Token qualifierFinal = null;
+	
+		try{
+			if (qualifiers.get(0) != null)
+				qualifierEncapsulation = qualifiers.get(0);
+		} catch (Exception e) {}
+		
+		try {
+			if (qualifiers.get(1) != null)
+				qualifierOverride = qualifiers.get(1);
+		}  catch (Exception e) {}
+		
+		try {
+		if (qualifiers.get(2) != null)
+			qualifierFinal = qualifiers.get(2);
+		}  catch (Exception e) {}
+	
+		new Method(parametros, tipo, nomeMetodo, qualifierEncapsulation, qualifierOverride, qualifierFinal);
 	}
 
 	private void statementList() {
@@ -275,6 +301,7 @@ public class Compiler {
 			checkSemiColon = false;
 			break;
 		case RETURN:
+			//this.returnRequiredFlag = false;
 			returnStat();
 			//checkSemiColon = false;
 			break;
@@ -601,20 +628,27 @@ public class Compiler {
 		
 	}
 	
-	private void formalParamDec() {
-		paramDec();
+	private ArrayList<ParamDec> formalParamDec() {
+		ArrayList<ParamDec> parametros = new ArrayList<ParamDec>();
+		parametros.add(paramDec());
 		while(lexer.token == Token.COMMA){
 			next();
-			paramDec();
+			parametros.add(paramDec());
 		}
+		
+		return parametros;
 	}
-	private void paramDec() {
-		type();
+	private ParamDec paramDec() {
+		Type tipo = type();
+		String identificador = null;
 		if(lexer.token == Token.ID) {
+			identificador = lexer.getStringValue();
 			next();
 		}else {
 			error("A parameter name was expected and get " +lexer.token);
 		}
+		
+		return new ParamDec(tipo, identificador);
 	}
 	private Field fieldDec(ArrayList<Token> qualifiers) {
 		boolean flagVirgula = false;
@@ -649,6 +683,9 @@ public class Compiler {
 			
 			
 		}
+
+		if (qualifiers.isEmpty())
+			qualifiers.add(Token.PRIVATE);
 
 		Field campo = new Field();
 		campo.setType(tipo);

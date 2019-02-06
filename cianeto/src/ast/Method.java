@@ -14,6 +14,16 @@ public class Method {
 		this.qualifierFinal = qualifierFinal;
 	}
 	
+	public Method(ArrayList<ParamDec> paramDec,Type type, String id,Token qualifierEncapsulation, Token qualifierOverride, Token qualifierFinal) {
+		this.paramDec = paramDec;
+		this.type = type;
+		this.statementList = null;
+		this.id = id;
+		this.qualifierEncapsulation = qualifierEncapsulation;
+		this.qualifierOverride = qualifierOverride;
+		this.qualifierFinal = qualifierFinal;
+	}
+	
 	public ArrayList<ParamDec> getParamDec() {
 		return paramDec;
 	}

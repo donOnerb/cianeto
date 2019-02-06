@@ -9,13 +9,11 @@ public class CianetoClass extends Type {
 	public CianetoClass( String name ) {
 		super(name);
 	}
-
+	
 	@Override
 	public String getCname() {
 		return getName();
 	}
-
-
 
 	public CianetoClass getSuperclass() {
 		return superclass;
@@ -49,11 +47,20 @@ public class CianetoClass extends Type {
 		this.privateMethodList = privateMethodList;
 	}
 
+	public boolean getOpen() {
+		return open;
+	}
+
+	public void setOpen(boolean open) {
+		this.open = open;
+	}
 	
 	//private String name;
 	private CianetoClass superclass;
 	private ArrayList<Field> fieldList;
 	private ArrayList<Method> publicMethodList, privateMethodList;
+	private boolean open;
+
 
 	// métodos públicos get e set para obter e iniciar as variáveis acima,
 	// entre outros métodos
