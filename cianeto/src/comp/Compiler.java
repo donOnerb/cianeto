@@ -26,6 +26,7 @@ public class Compiler {
 		programClassExists = false;
 		
 		lexer.nextToken();
+		
 		program = program(compilationErrorList);
 		return program;
 	}
@@ -64,6 +65,7 @@ public class Compiler {
 			}
 
 		}
+		
 		if ( !thereWasAnError && lexer.token != Token.EOF ) {
 			try {
 				error("End of file expected and get " +lexer.token);
@@ -71,6 +73,15 @@ public class Compiler {
 			catch( CompilerError e) {
 			}
 		}
+		
+		try {
+			if (!programClassExists)
+				signalError.showError("Source code without a class 'Program'", true);
+		} catch (CompilerError e) {
+			e.printStackTrace();
+			return program;
+		}
+		
 		return program;
 	}
 
@@ -170,6 +181,9 @@ public class Compiler {
 		CianetoClass classe = new CianetoClass(className);
 		classe.setOpen(open);
 		
+		if (classe.getName().equals("Program"))
+			programClassExists = true;
+		
 		/* Coloca a classe na hash global
 		*/
 		symbolTable.putInGlobal(className, classe);
@@ -181,13 +195,15 @@ public class Compiler {
 				error("Identifier expected");
 			String superclassName = lexer.getStringValue();
 			
-			/* Verifica se a superclasse existe, se não está herdando da própria classe
-			   e se é possível herdar da superclasse (se ela é open)
-			*/
+			// Verifica se a classe está herdando de si mesma
 			if (classe.getName().equals(superclassName)) {
 				error("Class " + classe.getName() + " is inheriting from itself");
 			}
 			
+			//
+			
+			/* Verifica se a superclasse existe e se é possível herdar da superclasse (se ela é open)
+			*/
 			if ((type = symbolTable.getInGlobal(superclassName)) != null){
 				if ((type instanceof CianetoClass)){
 					
@@ -210,14 +226,19 @@ public class Compiler {
 		ArrayList<Field> campos = new ArrayList<Field>();
 		ArrayList<Method> metodosPublicos = new ArrayList<Method>();
 		ArrayList<Method> metodosPrivados = new ArrayList<Method>();
-		
 		Method metodo;
 		
 		while ( true ) {
 			
 			ArrayList<Token> qualifiers = qualifier();
 			if ( lexer.token == Token.VAR ) {
-				campos.add(fieldDec(qualifiers));
+				Field campo = fieldDec(qualifiers);
+				
+				// Verifica se field não voi declarado público
+				if (campo.getQualifier() == Token.PUBLIC)
+					signalError.showError("Attempt to declare public instance variable", true);
+				
+				campos.add(campo);
 			}
 			else if ( lexer.token == Token.FUNC ) {
 				
