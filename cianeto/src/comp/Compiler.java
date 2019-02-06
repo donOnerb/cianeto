@@ -193,12 +193,21 @@ public class Compiler {
 			}
 			else if ( lexer.token == Token.FUNC ) {
 				
-				methodDec(qualifiers);
+				metodo = methodDec(qualifiers);
+				if (metodo.isPublic())
+					metodosPublicos.add(metodo);
+				else 
+					metodosPrivados.add(metodo);
+			
 			}
 			else {
 				break;
 			}
 		}
+		
+		classe.setFieldList(campos);
+		classe.setPrivateMethodList(metodosPrivados);
+		classe.setPublicMethodList(metodosPublicos);
 	}
 
 	private void error(String msg) {
@@ -215,7 +224,7 @@ public class Compiler {
 		}
 	}
 
-	private void methodDec(ArrayList<Token> qualifiers) {
+	private Method methodDec(ArrayList<Token> qualifiers) {
 		lexer.nextToken();
 		
 		ArrayList<ParamDec> parametros = null;
@@ -260,7 +269,7 @@ public class Compiler {
 		
 		next();
 	
-		Token qualifierEncapsulation = null;
+		Token qualifierEncapsulation = Token.PUBLIC;
 		Token qualifierOverride = null;
 		Token qualifierFinal = null;
 	
@@ -279,7 +288,10 @@ public class Compiler {
 			qualifierFinal = qualifiers.get(2);
 		}  catch (Exception e) {}
 	
-		new Method(parametros, tipo, nomeMetodo, qualifierEncapsulation, qualifierOverride, qualifierFinal);
+		Method novo = new Method(parametros, tipo, nomeMetodo, qualifierEncapsulation, qualifierOverride, qualifierFinal);
+		
+		return novo;
+	
 	}
 
 	private void statementList() {
