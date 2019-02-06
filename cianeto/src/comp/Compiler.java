@@ -25,6 +25,7 @@ public class Compiler {
 		Program program = null;
 		programClassExists = false;
 		currentClass = null;
+		countWhile = 0;
 		
 		lexer.nextToken();
 		
@@ -412,7 +413,9 @@ public class Compiler {
 			checkSemiColon = false;
 			break;
 		case WHILE:
+			countWhile++;
 			whileStat();
+			countWhile--;
 			checkSemiColon = false;
 			break;
 		case RETURN:
@@ -421,6 +424,9 @@ public class Compiler {
 			//checkSemiColon = false;
 			break;
 		case BREAK:
+			// Caso não esteja em nenhum while é exibida mensagem de erro
+			if (this.countWhile == 0)
+				error("'break' statement found outside a 'while' statement");
 			breakStat();
 			break;
 		case SEMICOLON:
@@ -971,6 +977,6 @@ public class Compiler {
 	private boolean returnRequiredFlag; 
 	private boolean programClassExists;
 	private String currentClass;
-	
+	private int countWhile;
 
 }
