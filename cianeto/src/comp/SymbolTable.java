@@ -3,12 +3,11 @@ import java.util.*;
 
 
 public class SymbolTable {
-	 Hashtable globalTable;
-     Hashtable localTable;
+	private Hashtable globalTable, localTable;
 	
 	public SymbolTable() {
-        Hashtable globalTable = new Hashtable();
-        Hashtable localTable  = new Hashtable();
+        globalTable = new Hashtable();
+        localTable  = new Hashtable();
 	}
     
     public Object putInGlobal( String key, Object value ) {

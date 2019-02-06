@@ -21,8 +21,10 @@ public class Compiler {
 		symbolTable = new SymbolTable();
 		lexer = new Lexer(input, signalError);
 		signalError.setLexer(lexer);
-
+		
 		Program program = null;
+		programClassExists = false;
+		
 		lexer.nextToken();
 		program = program(compilationErrorList);
 		return program;
@@ -155,17 +157,43 @@ public class Compiler {
 		
 		String className = lexer.getStringValue();
 		
+		/* Verifica se classe ainda não existe (Verifica na hash global por ser uma classe)
+		*/
+		Object type;
+		
+		if ((type = symbolTable.getInGlobal(className)) != null){
+			if ((type instanceof CianetoClass)){
+				error("Class already declared");
+			}
+		} 
+		
 		CianetoClass classe = new CianetoClass(className);
 		classe.setOpen(open);
 		
+		/* Coloca a classe na hash global
+		*/
+		symbolTable.putInGlobal(className, classe);
+		
 		lexer.nextToken();
 		if ( lexer.token == Token.EXTENDS ) {
-			//System.out.println("not enter");
 			lexer.nextToken();
 			if ( lexer.token != Token.ID )
 				error("Identifier expected");
 			String superclassName = lexer.getStringValue();
-
+			
+			/* Verifica se a superclasse existe, se não está herdando da própria classe
+			   e se é possível herdar da superclasse (se ela é open)
+			*/
+			if (classe.getName().equals(superclassName)) {
+				error("Class " + classe.getName() + " is inheriting from itself");
+			}
+			
+			if ((type = symbolTable.getInGlobal(superclassName)) != null){
+				if ((type instanceof CianetoClass)){
+					
+				}
+			} 
+			
 			lexer.nextToken();
 		}
 		//System.out.println(lexer.token);
@@ -233,7 +261,9 @@ public class Compiler {
 		
 		if ( lexer.token == Token.IDCOLON ) {
 				// keyword method. It has parameters
+				// Retira o ':' do nome do metodo
 				nomeMetodo = lexer.getStringValue();
+				nomeMetodo = nomeMetodo.substring(0, nomeMetodo.length() - 1);
 				next();
 				parametros = formalParamDec();
 			
@@ -828,6 +858,7 @@ public class Compiler {
 	private Lexer			lexer;
 	private ErrorSignaller	signalError;
 	private boolean returnRequiredFlag; 
+	private boolean programClassExists;
 	
 
 }
