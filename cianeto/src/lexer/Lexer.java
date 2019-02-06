@@ -1,3 +1,8 @@
+/*******************************************************************************
+ * Integrantes:
+ *  - Breno Viana de Oliveira
+ *  - Michael dos Santos
+ *******************************************************************************/
 package lexer;
 
 import java.util.Hashtable;

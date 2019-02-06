@@ -1,3 +1,8 @@
+/*******************************************************************************
+ * Integrantes:
+ *  - Breno Viana de Oliveira
+ *  - Michael dos Santos
+ *******************************************************************************/
 package comp;
 import java.io.BufferedReader;
 import java.io.File;
