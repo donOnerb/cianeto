@@ -356,21 +356,19 @@ public class Compiler {
 		Token qualifierOverride = null;
 		Token qualifierFinal = null;
 	
-		try{
-			if (qualifiers.get(0) != null)
-				qualifierEncapsulation = qualifiers.get(0);
-		} catch (Exception e) {}
-		
-		try {
-			if (qualifiers.get(1) != null)
-				qualifierOverride = qualifiers.get(1);
-		}  catch (Exception e) {}
-		
-		try {
-		if (qualifiers.get(2) != null)
-			qualifierFinal = qualifiers.get(2);
-		}  catch (Exception e) {}
-	
+		for (Token qualify : qualifiers) {
+			if (qualify == Token.PUBLIC)
+				qualifierEncapsulation = Token.PUBLIC;
+				
+			if (qualify == Token.PRIVATE)
+				qualifierEncapsulation = Token.PRIVATE;
+				
+			if (qualify == Token.OVERRIDE)
+				qualifierOverride = Token.OVERRIDE;
+			
+			if (qualify == Token.FINAL)
+				qualifierFinal = Token.FINAL;
+		}	
 		Method novo = new Method(parametros, tipo, nomeMetodo, qualifierEncapsulation, qualifierOverride, qualifierFinal);
 		
 		return novo;
