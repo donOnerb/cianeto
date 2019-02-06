@@ -24,6 +24,7 @@ public class Compiler {
 		
 		Program program = null;
 		programClassExists = false;
+		currentClass = null;
 		
 		lexer.nextToken();
 		
@@ -167,6 +168,7 @@ public class Compiler {
 			error("Identifier expected");
 		
 		String className = lexer.getStringValue();
+		currentClass = new String(className);
 		
 		/* Verifica se classe ainda não existe (Verifica na hash global por ser uma classe)
 		*/
@@ -218,8 +220,25 @@ public class Compiler {
 		if ( lexer.token != Token.END) {
 			error("'end' expected and get " +lexer.token);
 		}
+		
+		// Verifica se existe o metodo 'run' caso seja a classe atual seja a 'Program'
+		if (currentClass.equals("Program")){
+			ArrayList<Method> listaMetodos = classe.getPublicMethodList();
+			
+			boolean existeRun = false;
+			for (Method method : listaMetodos) {
+				if (method.getId().equals("run")){
+					existeRun = true;
+					break;
+				}	
+			}
+			if(!existeRun)
+				error("Method 'run' was not found in class 'Program'");
+		}
+		
+		
 		lexer.nextToken();
-
+		currentClass = null;
 	}
 
 	private void memberList(CianetoClass classe) {
@@ -247,7 +266,6 @@ public class Compiler {
 					metodosPublicos.add(metodo);
 				else 
 					metodosPrivados.add(metodo);
-			
 			}
 			else {
 				break;
@@ -285,11 +303,22 @@ public class Compiler {
 				// Retira o ':' do nome do metodo
 				nomeMetodo = lexer.getStringValue();
 				nomeMetodo = nomeMetodo.substring(0, nomeMetodo.length() - 1);
+				
+				// Verifica se o método run de Program possui parâmetros
+				if (currentClass.equals("Program") && nomeMetodo.equals("run"))
+					error("Method 'run:' of class 'Program' cannot take parameters");
+				
 				next();
 				parametros = formalParamDec();
 			
 		//System.out.println(lexer.token+" AQUI");
 		}else if ( lexer.token == Token.ID ) {
+			nomeMetodo = lexer.getStringValue();
+			
+			// Verifica se o metodo 'run' da classe 'Program' não é private
+			if (currentClass.equals("Program") && nomeMetodo.equals("run") && qualifiers.contains(Token.PRIVATE))
+				error("Method 'run' of class 'Program' cannot be private");
+			
 			// unary method
 			lexer.nextToken();
 		}
@@ -299,6 +328,9 @@ public class Compiler {
 		}
 		if ( lexer.token == Token.MINUS_GT ) {
 			// method declared a return type
+			if (currentClass.equals("Program") && nomeMetodo.equals("run"))
+				error("Method 'run' of class 'Program' with a return value type");
+			
 			lexer.nextToken();
 			returnRequiredFlag = true;
 			tipo = type();
@@ -747,13 +779,20 @@ public class Compiler {
 			
 		}
 
-		if (qualifiers.isEmpty())
-			qualifiers.add(Token.PRIVATE);
-
 		Field campo = new Field();
 		campo.setType(tipo);
 		campo.setIdList(idList);
-		campo.setQualifier(qualifiers.get(0));
+		
+		for (Token qualify : qualifiers) {
+			if (qualify == Token.PUBLIC){
+				campo.setQualifier(qualify);
+			}
+			
+			if (qualify == Token.PRIVATE){
+				campo.setQualifier(qualify);
+			}
+		}
+		qualifiers.add(Token.PRIVATE);
 			
 		return(campo);
 	}
@@ -880,6 +919,7 @@ public class Compiler {
 	private ErrorSignaller	signalError;
 	private boolean returnRequiredFlag; 
 	private boolean programClassExists;
+	private String currentClass;
 	
 
 }
