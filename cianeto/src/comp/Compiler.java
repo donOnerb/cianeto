@@ -9,8 +9,16 @@ package comp;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 
-import ast.*;
-
+import ast.CianetoClass;
+import ast.Field;
+import ast.LiteralInt;
+import ast.LocalDec;
+import ast.MetaobjectAnnotation;
+import ast.Method;
+import ast.ParamDec;
+import ast.Program;
+import ast.Statement;
+import ast.Type;
 import lexer.Lexer;
 import lexer.Token;
 
@@ -339,9 +347,9 @@ public class Compiler {
 					error("Method " + metodo.getId() + "is being redeclared");
 				}
 				
-				if (type instanceof FieldUnico) {
-					FieldUnico variavel = (FieldUnico)type;
-					error("Method " + variavel.getId() + " has name equal to an instance variable");
+				if (type instanceof Field) {
+					Field variavel = (Field)type;
+					error("Method " + variavel.getIdList().get(0) + " has name equal to an instance variable");
 				}
 			}
 			
@@ -454,7 +462,7 @@ public class Compiler {
 			
 			
 			
-			if ( lexer.token == Token.ID && lexer.getStringValue().equals("out") ) {
+			if ( lexer.token == Token.ID && lexer.getStringValue().equals("Out") ) {
 				writeStat();
 				checkSemiColon = true;
 			} else {
@@ -481,7 +489,7 @@ public class Compiler {
 		boolean flag = true;
 		
 		next();
-		
+		ArrayList<String> aux = new ArrayList<String>();
 		Type tipo = null;
 		String nomeVariavel = null;
 		
@@ -495,8 +503,9 @@ public class Compiler {
 			if ((type = symbolTable.getInLocal(nomeVariavel)) != null) {
 				error("Variable " + nomeVariavel + " is being redeclared");
             }
-			
-			symbolTable.putInLocal(nomeVariavel, new LocalDecUnit(tipo, nomeVariavel));
+			aux.add(nomeVariavel);
+			symbolTable.putInLocal(nomeVariavel, new LocalDec(null, tipo, aux));
+			aux.clear();
 				
 			flag = false;
 			next();
@@ -583,6 +592,7 @@ public class Compiler {
 		check(Token.DOT, "a '.' was expected after 'out'");
 		next();
 		check(Token.IDCOLON, "'print:' or 'println:' was expected after 'out.'");
+		next();
 		String printName = lexer.getStringValue();
 		expr();
 	}
@@ -642,6 +652,7 @@ public class Compiler {
 	}
 	
 	private void factor() {
+		String nameVar;
 		switch(lexer.token) {
 			case LEFTPAR:
 				next();
@@ -655,7 +666,104 @@ public class Compiler {
 				next();
 				factor();
 				break;
+			case SELF:
+
+			next();
+					
+			if(lexer.token == Token.DOT) {
+				next();
+				if(lexer.token == Token.ID) {
+					nameVar = lexer.getStringValue();
+					if(symbolTable.getInLocalClass(nameVar) == null) {
+						error("Variable '"+nameVar+"' was not declared");
+					}
+					next();
+					if(lexer.token == Token.DOT) {
+						next();
+						if(lexer.token == Token.ID) {
+							nameVar = lexer.getStringValue();
+							if(symbolTable.get(nameVar) == null) {
+								error("Variable '"+nameVar+"' was not declared");
+							}
+							next();
+						}else if(lexer.token == Token.IDCOLON) {
+							nameVar = lexer.getStringValue();
+							nameVar = nameVar.substring(0, nameVar.length() - 1);
+							if(symbolTable.get(nameVar) == null) {
+								error("Variable '"+nameVar+"' was not declared");
+							}
+							next();
+							expressionList();
+						}else {
+							error("identifier or identifeircolon was expected and get " +lexer.token);
+						}
+					}
+							
+					}else if(lexer.token == Token.IDCOLON) {
+						nameVar = lexer.getStringValue();
+						nameVar = nameVar.substring(0, nameVar.length() - 1);
+						if(symbolTable.get(nameVar) == null) {
+							error("Variable '"+nameVar+"' was not declared");
+						}
+						next();
+						expressionList();
+					}
+						
+				}
+					
+					break;
+				
 			case ID:
+				if(lexer.getStringValue().equals("nil")) {
+					next();
+					break;
+				}else if(lexer.getStringValue().equals("In")) {
+					next();
+					if(lexer.token == Token.DOT) {
+						next();
+						if(lexer.getStringValue().equals("readInt") || lexer.getStringValue().equals("readString")) {
+							next();
+						}else {
+							error("'readInt' or 'readString' was expected and get " +lexer.token);
+						}
+					}else {
+						error("'.' was expected and get " +lexer.token);
+					}
+					break;
+				}else if(lexer.getStringValue().equals("super")) {
+					next();
+					if(lexer.token == Token.DOT) {
+						next();
+						if(lexer.token == Token.ID) {
+							nameVar = lexer.getStringValue();
+							if(symbolTable.get(nameVar) == null) {
+								error("Variable '"+nameVar+"' was not declared");
+							}
+							next();
+							break;
+						}else if(lexer.token == Token.IDCOLON) {
+							nameVar = lexer.getStringValue();
+							nameVar = nameVar.substring(0,nameVar.length() - 1);
+							if(symbolTable.get(nameVar) == null) {
+								error("Variable '"+nameVar+"' was not declared");
+							}
+							next();
+							expressionList();
+							break;
+						}else {
+							error("identifier or identifiercolon was expected and get " +lexer.token);
+						}
+							
+					}else {
+						error("'.' was expected and get " +lexer.token);
+					}
+					
+					break;
+				}
+				nameVar = lexer.getStringValue();
+				if(symbolTable.get(nameVar) == null) {
+					error("Variable '"+nameVar+"' was not declared");
+				}
 				next();
 				if(lexer.token == Token.DOT) {
 					next();
@@ -668,9 +776,18 @@ public class Compiler {
 						next();
 						break;
 					}else if(lexer.token == Token.ID) {
+						nameVar = lexer.getStringValue();
+						if(symbolTable.get(nameVar) == null) {
+							error("Variable '"+nameVar+"' was not declared");
+						}
 						next();
 						break;
 					}else if(lexer.token == Token.IDCOLON) {
+						nameVar = lexer.getStringValue();
+						nameVar = nameVar.substring(0,nameVar.length() - 1);
+						if(symbolTable.get(nameVar) == null) {
+							error("Variable '"+nameVar+"' was not declared");
+						}
 						next();
 						expressionList();
 						break;
@@ -689,71 +806,7 @@ public class Compiler {
 				next();
 				break;
 			default:
-				if(lexer.getStringValue().equals("nil")) {
-					next();
-					break;
-				}else if(lexer.getStringValue().equals("In")) {
-					next();
-					if(lexer.token == Token.DOT) {
-						next();
-						if(lexer.getStringValue().equals("readInt") || lexer.getStringValue().equals("readString")) {
-							next();
-						}else {
-							error("'readInt' or 'readString' was expected and get " +lexer.token);
-						}
-					}else {
-						error("'.' was expected and get " +lexer.token);
-					}
-					break;
-				}else if(lexer.getStringValue().equals("self")) {
-					
-					next();
-					
-					if(lexer.token == Token.DOT) {
-						next();
-						if(lexer.token == Token.ID) {
-							next();
-							if(lexer.token == Token.DOT) {
-								next();
-								if(lexer.token == Token.ID) {
-									next();
-								}else if(lexer.token == Token.IDCOLON) {
-									next();
-									expressionList();
-								}else {
-									error("identifier or identifeircolon was expected and get " +lexer.token);
-								}
-							}
-							
-						}else if(lexer.token == Token.IDCOLON) {
-							next();
-							expressionList();
-						}
-						
-					}
-					
-					break;
-				}else if(lexer.getStringValue().equals("super")) {
-					next();
-					if(lexer.token == Token.DOT) {
-						next();
-						if(lexer.token == Token.ID) {
-							next();
-							break;
-						}else if(lexer.token == Token.IDCOLON) {
-							next();
-							expressionList();
-							break;
-						}else {
-							error("identifier or identifiercolon was expected and get " +lexer.token);
-						}
-							
-					}else {
-						error("'.' was expected and get " +lexer.token);
-					}
-					
-					break;
-				}
+				
 			
 				error("a lot of thing was expected and get " +lexer.token);
 				
@@ -774,19 +827,23 @@ public class Compiler {
 	
 	private ArrayList<ParamDec> formalParamDec() {
 		ArrayList<ParamDec> parametros = new ArrayList<ParamDec>();
-		parametros.add(paramDec());
+		parametros.add(paramDec(new ArrayList<String>()));
 		while(lexer.token == Token.COMMA){
 			next();
-			parametros.add(paramDec());
+			parametros.add(paramDec(new ArrayList<String>()));
 		}
 		
 		return parametros;
 	}
-	private ParamDec paramDec() {
+	private ParamDec paramDec(ArrayList<String> aux) {
+		
 		Type tipo = type();
 		String identificador = null;
+		
 		if(lexer.token == Token.ID) {
 			identificador = lexer.getStringValue();
+			aux.add(identificador);
+			symbolTable.putInLocal(identificador, new Field(Token.PRIVATE,tipo,aux));
 			next();
 		}else {
 			error("A parameter name was expected and get " +lexer.token);
@@ -796,7 +853,7 @@ public class Compiler {
 	}
 	private Field fieldDec(ArrayList<Token> qualifiers) {
 		boolean flagVirgula = false;
-		
+		ArrayList<String> aux = new ArrayList<String>();
 		lexer.nextToken(); 
 		Type tipo = type();
 		ArrayList<String> idList = new ArrayList<String>();
@@ -818,8 +875,9 @@ public class Compiler {
 					if (quali == Token.PUBLIC)
 						qualify = Token.PUBLIC;
 				}
-				symbolTable.putInLocalClass(nomeAtributo, new FieldUnico(tipo, nomeAtributo, qualify));
-				
+				aux.add(nomeAtributo);
+				symbolTable.putInLocalClass(nomeAtributo, new Field(qualify, tipo, aux));
+				aux.clear();
 				
 				idList.add(lexer.getStringValue());
 				

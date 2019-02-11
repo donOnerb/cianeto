@@ -1,0 +1,697 @@
+Relatório do Compilador
+
+24 de um total de 134 erros que deveriam ser sinalizados não o foram (17%)
+10 erros foram sinalizados na linha errada (7%)
+45 erros foram sinalizados em 66 arquivos sem erro (68%)
+
+Erros que deveriam ser sinalizados mas não foram:
+
+ER-SEM04.ci, 11, Type error: value of the right-hand side is not subtype of the variable of the left-hand side. (comp.Compiler.assignExprLocalDec())
+
+ER-SEM05.ci, 10, 'int' cannot be assigned to 'boolean' (comp.Compiler.assignExprLocalDec())
+
+ER-SEM06.ci, 11, 'operator expected' or 'variable expected at the left-hand side of a assignment'
+
+ER-SEM08.ci, 12, type boolean does not support operation '+' (comp.Compiler.simpleExpr())
+
+ER-SEM09.ci, 14, type 'int' does not support operator '&&' (comp.Compiler.term())
+
+ER-SEM11.ci, 14, non-boolean expression in 'while' command (comp.Compiler.whileStatement())
+
+ER-SEM12.ci, 9, operator '+' of 'Int' expects an 'Int' value (comp.Compiler.simpleExpr())
+
+ER-SEM14.ci, 10, Attempt to print a boolean expression
+
+ER-SEM15.ci, 9, Operator '!' does not accepts 'int' values (comp.Compiler.factor())
+
+ER-SEM16.ci, 11, Operator '-' does not accepts 'boolean' expressions (comp.Compiler.signalFactor())
+
+ER-SEM18.ci, 9, Type 'k' was not found (comp.Compiler.localDec())
+
+ER-SEM38.ci, 20, Type error: type of the right-hand side of the assignment is not a subclass of the left-hand side (comp.Compiler.assignExprLocalDec())
+
+ER-SEM39.ci, 23, Type error: type of the expression returned is not subclass of the method return type (comp.Compiler.returnStatement())
+
+ER-SEM41.ci, 22, Type error: the type of the expression of the right-hand side is a basic type and the type of the variable of the left-hand side is a class (comp.Compiler.assignExprLocalDec())
+
+ER-SEM42.ci, 15, Type error: type of the left-hand side of the assignment is a basic type and the type of the right-hand side is a class (comp.Compiler.assignExprLocalDec())
+
+ER-SEM43.ci, 11, Type error: 'nil' cannot be assigned to a variable of a basic type (comp.Compiler.assignExprLocalDec())
+
+ER-SEM44.ci, 26, Command 'write' does not accept objects (comp.Compiler.writeStatement())
+
+ER-SEM52.ci, 11, 'override' expected before overridden method
+
+ER-SEM53.ci, 11, 'override' expected before overridden method
+
+ER-SEM54.ci, 12, 'override' expected before overridden method
+
+ER-SEM55.ci, 9, Illegal types with ++, only Int and String are allowed
+
+ER-SEM56.ci, 11, Illegal types with ++, only Int and String are allowed
+
+ER-SEM57.ci, 25, Incompatible types cannot be compared with '==' because the results will always be 'false' (comp.Compiler.expr())
+
+ER-SEM58.ci, 25, Incompatible types cannot be compared with '!=' because the result will always be 'false' (comp.Compiler.expr())
+
+######################################################
+Erros que foram sinalizados na linha errada:
+
+ER-SEM19.ci
+    correto:    8, Type 'Program' was not found (comp.Compiler.localDec())
+    sinalizado: 19, Variable 'm' was not declared
+
+ER-SEM29.ci
+    correto:    21, Method 'put' of the subclass 'B' has a signature different from the same method of superclass 'A' (comp.Compiler.methodDec() or comp.Compiler.classDec())
+    sinalizado: 32, Variable 'put' was not declared
+
+ER-SEM30.ci
+    correto:    23, Method 'put' of subclass 'B' has a signature different from method inherited from superclass 'A' (comp.Compiler.methodDec())
+    sinalizado: 34, Variable 'put' was not declared
+
+ER-SEM35.ci
+    correto:    13, Illegal 'return' statement. Method returns 'void' (comp.Compiler.returnStatement())
+    sinalizado: 23, Variable 'm' was not declared
+
+ER-SEM40.ci
+    correto:    50, Type error: the type of the real parameter is not subclass of the type of the formal parameter (comp.Compiler.factor())
+    sinalizado: 34, a lot of thing was expected and get super
+
+ER-SEM51.ci
+    correto:    20, Method 'put' is being redefined in subclass 'B' with a signature different from the method of superclass 'A' (comp.Compiler.methodDec())
+    sinalizado: 29, Variable 'put' was not declared
+
+ER-SIN-EXTRA02.ci
+    correto:    40,  
+    sinalizado: 36, Variable 'setName' was not declared
+
+ER-SIN20.ci
+    correto:    6, ';' missing 
+    sinalizado: 7, ';' missing
+
+ER-SIN21.ci
+    correto:    9, ';' missing 
+    sinalizado: 10, ';' missing
+
+ER-SIN22.ci
+    correto:    10, ';' missing 
+    sinalizado: 11, ';' missing
+
+######################################################
+Erros que foram sinalizados mas não deveriam ter sido:
+
+ok-calc.ci, 76, Variable 'calculaNota' was not declared
+
+OK-CHK07.ci, 79, Variable 'getName' was not declared
+
+ok-fact.ci, 28, Variable 'fact' was not declared
+
+ok-fib.ci, 28, Variable 'fib' was not declared
+
+OK-GER01.ci, 104, Variable 'm' was not declared
+
+OK-GER02.ci, 40, Variable 'm' was not declared
+
+OK-GER03.ci, 69, Variable 'm' was not declared
+
+OK-GER04.ci, 43, Variable 'm' was not declared
+
+OK-GER05.ci, 45, Variable 'm' was not declared
+
+OK-GER06.ci, 49, Variable 'm' was not declared
+
+OK-GER07.ci, 30, Variable 'm' was not declared
+
+OK-GER08.ci, 45, Variable 'm1' was not declared
+
+OK-GER09.ci, 30, a lot of thing was expected and get super
+
+OK-GER10.ci, 41, a lot of thing was expected and get super
+
+OK-GER11.ci, 53, Variable 'm2' was not declared
+
+OK-GER12.ci, 32, a lot of thing was expected and get super
+
+OK-GER13.ci, 44, a lot of thing was expected and get super
+
+OK-GER14.ci, 41, a lot of thing was expected and get super
+
+OK-GER15.ci, 142, Variable 'init_A' was not declared
+
+OK-GER16.ci, 46, a lot of thing was expected and get super
+
+OK-GER21.ci, 24, Variable 'get' was not declared
+
+OK-GER22.ci, 27, ';' missing
+
+OK-LEX02.ci, 30, Variable 'm' was not declared
+
+OK-LEX03.ci, 27, Variable 'm' was not declared
+
+OK-LEX10.ci, 29, Variable 'm' was not declared
+
+ok-math.ci, 57, Variable 'sum' was not declared
+
+ok-queue.ci, 27, Variable 'print' was not declared
+
+OK-SEM05.ci, 33, a lot of thing was expected and get super
+
+OK-SEM06.ci, 36, Variable 'set' was not declared
+
+OK-SEM08.ci, 53, Variable 'put' was not declared
+
+OK-SEM09.ci, 17, Variable 'm' was not declared
+
+OK-SEM10.ci, 45, Variable 'first' was not declared
+
+OK-SEM11.ci, 24, Variable 'open' was not declared
+
+OK-SEM12.ci, 23, Variable 'm' was not declared
+
+OK-SEM13.ci, 27, Variable 'p' was not declared
+
+OK-SEM15.ci, 22, Variable 'print' was not declared
+
+ok-sem16.ci, 19, Variable 'getUser' was not declared
+
+ok-sem17.ci, 19, ';' missing
+
+OK-SEM18.ci, 23, ';' missing
+
+OK-SIN02.ci, 31, ';' missing
+
+OK-SIN08.ci, 24, Variable 'm' was not declared
+
+OK-SIN09.ci, 44, Variable 'm' was not declared
+
+OK-SIN10.ci, 33, a lot of thing was expected and get super
+
+OK-SIN11.ci, 20, ';' missing
+
+OK-SIN16.ci, 23, ';' missing
+
+######################################################
+Em todos os testes abaixo, o compilador sinalizou o erro na linha correta (quando o teste tinha erros) ou não sinalizou o erro (quando o teste NÃO tinha erros). Mas é necessário conferir se as mensagens emitidas pelo compilador são compatíveis com as mensagens de erro sugeridas pelas chamadas aos metaobjetos dos testes. 
+
+A lista abaixo contém o nome do arquivo de teste, a mensagem que ele sinalizou e a mensagem sugerida pelo arquivo de teste
+
+ER-LEX-EXTRA01.ci
+The compiler message was: "Variable 'ver' was not declared"
+The 'cep' message is:      ""
+
+
+ER-LEX03.ci
+The compiler message was: "literal int out of limits"
+The 'cep' message is:      "literal int out of limits"
+
+
+ER-LEX04.ci
+The compiler message was: "Invalid Character: '#'"
+The 'cep' message is:      "Unknown character"
+
+
+ER-LEX05.ci
+The compiler message was: "'_' cannot start an indentifier"
+The 'cep' message is:      "Identifier starting with underscore"
+
+
+ER-LEX06.ci
+The compiler message was: "';' missing"
+The 'cep' message is:      "Unknown character"
+
+
+ER-LEX07.ci
+The compiler message was: "Comment opened and not closed"
+The 'cep' message is:      "Comment started in line 5 was not closed"
+
+
+ER-LEX08.ci
+The compiler message was: "literal int out of limits"
+The 'cep' message is:      "literal int out of limits"
+
+
+ER-SEM-EXTRA01.ci
+The compiler message was: "Variable 'result' was not declared"
+The 'cep' message is:      ""
+
+
+ER-SEM-EXTRA02.ci
+The compiler message was: "Variable 'se' was not declared"
+The 'cep' message is:      ""
+
+
+ER-SEM01.ci
+The compiler message was: "missing 'return' statement"
+The 'cep' message is:      "Missing 'return' statement in method 'm'"
+
+
+ER-SEM02.ci
+The compiler message was: "Variable 'I' was not declared"
+The 'cep' message is:      "Variable 'I' was not declared"
+
+
+ER-SEM03.ci
+The compiler message was: "Variable i is being redeclared"
+The 'cep' message is:      "Variable 'i' is being redeclared"
+
+
+ER-SEM07.ci
+The compiler message was: "Variable 'run' was not declared"
+The 'cep' message is:      "Message send to a non-object receiver"
+
+
+er-sem100.ci
+The compiler message was: "Variable 'set' was not declared"
+The 'cep' message is:      "Identifer 'error' was not found"
+
+
+ER-SEM13.ci
+The compiler message was: "'readInt' or 'readString' was expected and get ~ident"
+The 'cep' message is:      "Unknown method 'readBoolean'"
+
+
+ER-SEM17.ci
+The compiler message was: "'readInt' or 'readString' was expected and get ~ident:"
+The 'cep' message is:      "Method 'readInt:' was not found"
+
+
+ER-SEM20.ci
+The compiler message was: "A variable name was expected and get Boolean"
+The 'cep' message is:      "Identifier expected"
+
+
+ER-SEM21.ci
+The compiler message was: "A variable name was expected and get false"
+The 'cep' message is:      "Identifier expected"
+
+
+ER-SEM22.ci
+The compiler message was: "A variable name was expected and get ~number"
+The 'cep' message is:      "Identifier expected"
+
+
+ER-SEM23.ci
+The compiler message was: "A variable name was expected and get class"
+The 'cep' message is:      "Identifier expected"
+
+
+ER-SEM24.ci
+The compiler message was: "A variable name was expected and get true"
+The 'cep' message is:      "Identifier expected"
+
+
+ER-SEM25.ci
+The compiler message was: "A variable name was expected and get while"
+The 'cep' message is:      "Identifier expected"
+
+
+ER-SEM26.ci
+The compiler message was: "'break' statement found outside a 'while' statement"
+The 'cep' message is:      "'break' statement found outside a 'while' statement"
+
+
+ER-SEM27.ci
+The compiler message was: "Class A is inheriting from itself"
+The 'cep' message is:      "Class 'A' is inheriting from itself"
+
+
+ER-SEM28.ci
+The compiler message was: "Variable 'i' is being redeclared"
+The 'cep' message is:      "Variable 'i' is being redeclared"
+
+
+ER-SEM31.ci
+The compiler message was: "Source code without a class 'Program'"
+The 'cep' message is:      "Method 'i' has name equal to an instance variable"
+
+
+ER-SEM32.ci
+The compiler message was: "Method mis being redeclared"
+The 'cep' message is:      "Method 'm' is being redeclared"
+
+
+ER-SEM33.ci
+The compiler message was: "Method mis being redeclared"
+The 'cep' message is:      "Method 'm' is being redeclared"
+
+
+ER-SEM34.ci
+The compiler message was: "Variable 'm' was not declared"
+The 'cep' message is:      "Message send 'a.m()' returns a value that is not used"
+
+
+ER-SEM36.ci
+The compiler message was: "Variable 'm' was not declared"
+The 'cep' message is:      "Expression expected in the right-hand side of assignment"
+
+
+ER-SEM37.ci
+The compiler message was: "Variable 'set' was not declared"
+The 'cep' message is:      "Method 'set' was not found in class 'A' or its superclasses"
+
+
+ER-SEM45.ci
+The compiler message was: "Variable 'run' was not declared"
+The 'cep' message is:      "Identifier 'run' was not declared"
+
+
+ER-SEM46.ci
+The compiler message was: "a lot of thing was expected and get super"
+The 'cep' message is:      "'super' used in class 'Program' that does not have a superclass"
+
+
+ER-SEM47.ci
+The compiler message was: "a lot of thing was expected and get super"
+The 'cep' message is:      "Method 'm' was not found in superclass 'B' or its superclasses"
+
+
+ER-SEM48.ci
+The compiler message was: "Identifier expected"
+The 'cep' message is:      "Identifier expected"
+
+
+ER-SEM49.ci
+The compiler message was: "Identifier expected"
+The 'cep' message is:      "Class expected"
+
+
+ER-SEM50.ci
+The compiler message was: "'break' statement found outside a 'while' statement"
+The 'cep' message is:      "Command 'break' outside a command 'while'"
+
+
+ER-SEM59.ci
+The compiler message was: "Variable 'p' was not declared"
+The 'cep' message is:      "Method 'p' was not found in the public interface of 'A' or ts superclasses"
+
+
+ER-SEM60.ci
+The compiler message was: "a lot of thing was expected and get super"
+The 'cep' message is:      "Method 'p' was not found in the public interface of 'A' or its superclasses"
+
+
+ER-SEM61.ci
+The compiler message was: "Variable 's' was not declared"
+The 'cep' message is:      "Method 's' was not found in class 'C' or its superclasses"
+
+
+ER-SEM62.ci
+The compiler message was: "Variable 'a' was not declared"
+The 'cep' message is:      "Identifier 'a' was not found"
+
+
+ER-SEM68.ci
+The compiler message was: "Variable 'p' was not declared"
+The 'cep' message is:      "Method 'p' was not found in class 'Program' or its superclasses"
+
+
+ER-SEM70.ci
+The compiler message was: "Method mis being redeclared"
+The 'cep' message is:      "Method 'm' is being redefined"
+
+
+ER-SEM77.ci
+The compiler message was: "Method 'run' was not found in class 'Program'"
+The 'cep' message is:      "Method 'run' was not found in class 'Program'"
+
+
+ER-SEM78.ci
+The compiler message was: "Source code without a class 'Program'"
+The 'cep' message is:      "Source code without a class 'Program'"
+
+
+ER-SEM79.ci
+The compiler message was: "Method 'run:' of class 'Program' cannot take parameters"
+The 'cep' message is:      "Method 'run:' of class 'Program' cannot take parameters"
+
+
+ER-SEM80.ci
+The compiler message was: "Method 'run' of class 'Program' with a return value type"
+The 'cep' message is:      "Method 'run' of class 'Program' with a return value type"
+
+
+ER-SEM81.ci
+The compiler message was: "Method 'run' of class 'Program' cannot be private"
+The 'cep' message is:      "Method 'run' of class 'Program' cannot be private"
+
+
+er-sem82.ci
+The compiler message was: "Method 'run:' of class 'Program' cannot take parameters"
+The 'cep' message is:      ""
+
+
+ER-SEM86.ci
+The compiler message was: "Variable 'A' was not declared"
+The 'cep' message is:      "Class 'A' was not found"
+
+
+ER-SEM88.ci
+The compiler message was: "';' missing"
+The 'cep' message is:      "boolean expression expected in a repeat-until statement"
+
+
+ER-SEM89.ci
+The compiler message was: "';' missing"
+The 'cep' message is:      "boolean expression expected in a repeat-until statement"
+
+
+ER-SEM90.ci
+The compiler message was: "Invalid Character: ':'"
+The 'cep' message is:      ""
+
+
+ER-SEM91.ci
+The compiler message was: "Variable 'numero' was not declared"
+The 'cep' message is:      ""
+
+
+ER-SIN-EXTRA.ci
+The compiler message was: "'{' expected"
+The 'cep' message is:      "'{' expected"
+
+
+ER-SIN-EXTRA01.ci
+The compiler message was: "'{' expected"
+The 'cep' message is:      ""
+
+
+ER-SIN01.ci
+The compiler message was: "'{' expected"
+The 'cep' message is:      "'{' expected"
+
+
+ER-SIN02.ci
+The compiler message was: "Missing identifier"
+The 'cep' message is:      "Missing identifier"
+
+
+ER-SIN03.ci
+The compiler message was: "A variable name was expected and get ;"
+The 'cep' message is:      "Identifier expected"
+
+
+ER-SIN04.ci
+The compiler message was: "Variable 'i' was not declared"
+The 'cep' message is:      "Statement expected"
+
+
+ER-SIN05.ci
+The compiler message was: "a lot of thing was expected and get ;"
+The 'cep' message is:      "Expression expected"
+
+
+ER-SIN06.ci
+The compiler message was: "Variable 'a' was not declared"
+The 'cep' message is:      "Expression expected"
+
+
+ER-SIN07.ci
+The compiler message was: "'readInt' or 'readString' was expected and get ;"
+The 'cep' message is:      "Command 'In.' without arguments"
+
+
+ER-SIN08.ci
+The compiler message was: "a lot of thing was expected and get ;"
+The 'cep' message is:      "Command ' Out.print' without arguments"
+
+
+ER-SIN09.ci
+The compiler message was: "Variable 'a' was not declared"
+The 'cep' message is:      "'{' expected"
+
+
+ER-SIN10.ci
+The compiler message was: "Variable 'a' was not declared"
+The 'cep' message is:      "'readInt' was not declared"
+
+
+er-sin100.ci
+The compiler message was: "missing 'return' statement"
+The 'cep' message is:      "missing 'return' statement"
+
+
+er-sin101.ci
+The compiler message was: "A variable name was expected and get ;"
+The 'cep' message is:      "Type expected"
+
+
+ER-SIN11.ci
+The compiler message was: "a lot of thing was expected and get ~ident:"
+The 'cep' message is:      "Missing 'Out.'"
+
+
+ER-SIN12.ci
+The compiler message was: "a lot of thing was expected and get {"
+The 'cep' message is:      "Expression expected"
+
+
+ER-SIN18.ci
+The compiler message was: "';' missing"
+The 'cep' message is:      "';' expected"
+
+
+ER-SIN19.ci
+The compiler message was: "';' missing"
+The 'cep' message is:      "';' missing"
+
+
+ER-SIN23.ci
+The compiler message was: "a lot of thing was expected and get else"
+The 'cep' message is:      "Statement expected"
+
+
+ER-SIN24.ci
+The compiler message was: "a lot of thing was expected and get <"
+The 'cep' message is:      "Expression expected OR Unknown sequence of symbols"
+
+
+ER-SIN25.ci
+The compiler message was: "a lot of thing was expected and get >"
+The 'cep' message is:      "Expression expected OR invalid sequence of symbols"
+
+
+ER-SIN26.ci
+The compiler message was: "'{' expected after the 'if' expression"
+The 'cep' message is:      "Expression expected OR invalid sequence of symbols"
+
+
+ER-SIN27.ci
+The compiler message was: "'{' expected after the 'if' expression"
+The 'cep' message is:      "Expression expected OR Unknown sequence of symbols"
+
+
+ER-SIN28.ci
+The compiler message was: "'class' expected and get ~ident"
+The 'cep' message is:      "'class' expected"
+
+
+ER-SIN29.ci
+The compiler message was: "'end' expected and get class"
+The 'cep' message is:      " Class member OR 'end' expected"
+
+
+ER-SIN30.ci
+The compiler message was: "Invalid Character: '#'"
+The 'cep' message is:      "Unknown character '#'"
+
+
+ER-SIN31.ci
+The compiler message was: "'end' expected and get ;"
+The 'cep' message is:      "'public', 'private', or '}' expected"
+
+
+ER-SIN32.ci
+The compiler message was: "A type was expected and get ,"
+The 'cep' message is:      "Type expected"
+
+
+ER-SIN33.ci
+The compiler message was: "A parameter name was expected and get {"
+The 'cep' message is:      "Identifier expected"
+
+
+ER-SIN34.ci
+The compiler message was: "'{' expected"
+The 'cep' message is:      "'{' expected"
+
+
+ER-SIN35.ci
+The compiler message was: "'{' expected"
+The 'cep' message is:      "'{' expected"
+
+
+ER-SIN36.ci
+The compiler message was: "A type was expected and get {"
+The 'cep' message is:      "Identifier expected"
+
+
+ER-SIN37.ci
+The compiler message was: "a lot of thing was expected and get )"
+The 'cep' message is:      "Expression expected"
+
+
+ER-SIN38.ci
+The compiler message was: "a lot of thing was expected and get end"
+The 'cep' message is:      "'}' expected"
+
+
+ER-SIN39.ci
+The compiler message was: "'{' expected"
+The 'cep' message is:      "'{' expected"
+
+
+ER-SIN40.ci
+The compiler message was: "Attempt to declare public instance variable"
+The 'cep' message is:      "Attempt to declare public instance variable 'i'"
+
+
+ER-SIN41.ci
+The compiler message was: "Identifier expected"
+The 'cep' message is:      "Identifier expected"
+
+
+ER-SIN43.ci
+The compiler message was: "'end' expected and get ~ident"
+The 'cep' message is:      "function or field declaration expected"
+
+
+ER-SIN44.ci
+The compiler message was: "Attempt to declare public instance variable"
+The 'cep' message is:      "Attempt to declare public instance variable 'i'"
+
+
+ER-SIN57.ci
+The compiler message was: "'end' expected and get ~ident"
+The 'cep' message is:      "'public', 'private' or '}' expected"
+
+
+ER-SIN58.ci
+The compiler message was: "')' expected"
+The 'cep' message is:      "')' expected"
+
+
+ER-SIN59.ci
+The compiler message was: "'until' was expected and get }"
+The 'cep' message is:      "'until' expected"
+
+
+ER-SIN60.ci
+The compiler message was: "';' missing"
+The 'cep' message is:      "')' unexpected"
+
+
+ER-SIN61.ci
+The compiler message was: "';' missing"
+The 'cep' message is:      "')' expected"
+
+
+ER-SIN62.ci
+The compiler message was: "'until' was expected and get }"
+The 'cep' message is:      "'}' not expected before 'until'"
+
+
+ER-SIN63.ci
+The compiler message was: "';' missing"
+The 'cep' message is:      "';' expected"
+
+
