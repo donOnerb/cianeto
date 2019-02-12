@@ -704,8 +704,17 @@ public class Compiler {
 				next();
 				if(lexer.token == Token.ID) {
 					nameVar = lexer.getStringValue();
-					if(symbolTable.getInLocalClass(nameVar) != null) {
-						//error("Variable '"+nameVar+"' was not declared");
+					String tipoVariavelInstancia = null;
+					Object tipo = null;
+					if((tipo = symbolTable.getInLocalClass(nameVar)) != null) {
+						//Usando variavel de instancia
+						
+						if(tipo instanceof Field) {
+							Field variavelNova = (Field)tipo;
+							tipoVariavelInstancia = variavelNova.getCName();
+						}
+						
+						
 					} else {
 						Object type;
 						if((type = symbolTable.getInGlobal(currentClass)) == null) {
@@ -749,16 +758,61 @@ public class Compiler {
 						}else if(lexer.token == Token.ID) {
 							nameVar = lexer.getStringValue();
 							
-							if(symbolTable.get(nameVar) == null) {
-								error("Variable '"+nameVar+"' was not declared");
+							
+							Object type;
+							if((type = symbolTable.getInGlobal(tipoVariavelInstancia)) == null) {
+								error("Class atual não existe");
 							}
+							
+							CianetoClass classe = (CianetoClass)type;
+							ArrayList<Method> listaMetodosPublicos = classe.getPublicMethodList();
+							
+							boolean existeMetodo = false;
+							
+							if(listaMetodosPublicos != null) {
+								for (Method metodo : listaMetodosPublicos) {
+									if(metodo.getId().equals(nameVar)) {
+										existeMetodo = true;
+										break;
+									}
+								}
+							}
+							
+							if(!existeMetodo && !existeMetodoClasseSuperClasses(classe, nameVar))
+								error("Method " + nameVar + " was not found in class or its superclasses");
+							
+							
+							
 							next();
 						}else if(lexer.token == Token.IDCOLON) {
 							nameVar = lexer.getStringValue();
 							nameVar = nameVar.substring(0, nameVar.length() - 1);
-							if(symbolTable.get(nameVar) == null) {
-								error("Variable '"+nameVar+"' was not declared");
+							
+							
+							
+							
+							Object type;
+							if((type = symbolTable.getInGlobal(tipoVariavelInstancia)) == null) {
+								error("Class atual não existe");
 							}
+							
+							CianetoClass classe = (CianetoClass)type;
+							ArrayList<Method> listaMetodosPublicos = classe.getPublicMethodList();
+							
+							boolean existeMetodo = false;
+							
+							if(listaMetodosPublicos != null) {
+								for (Method metodo : listaMetodosPublicos) {
+									if(metodo.getId().equals(nameVar)) {
+										existeMetodo = true;
+										break;
+									}
+								}
+							}
+							
+							if(!existeMetodo && !existeMetodoClasseSuperClasses(classe, nameVar))
+								error("Method " + nameVar + " was not found in class or its superclasses");
+							
 							next();
 							expressionList();
 						}else {
@@ -884,6 +938,7 @@ public class Compiler {
 				}
 				nameVar = lexer.getStringValue();
 				Object type;
+				
 				if((type = symbolTable.getInLocal(nameVar)) == null) {
 					if ((type = symbolTable.getInGlobal(nameVar)) == null) {
 						error("Variable '"+nameVar+"' was not declared");
@@ -907,12 +962,9 @@ public class Compiler {
 					}else if(lexer.token == Token.ID) {
 						nameVar = lexer.getStringValue();
 						
-						// Verifica se é uma variável local e caso seja é verificado se o tipo é de alguma classe
-						/*if(nameVar.equals(metodoAtual)) {
-							
-						} else */
-						
-						if (type instanceof Field) {
+						if(nameVar.equals("print")) {
+							// Faz nada
+						} else if (type instanceof Field) {
 							Field parametro = (Field)type;
 							String nomeTipo = parametro.getCName();
 							Object typeParametro;
