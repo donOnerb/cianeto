@@ -564,6 +564,9 @@ public class Compiler {
 			statement();
 		}
 		check(Token.UNTIL, "'until' was expected and get " +lexer.token);
+		next();
+		expr();
+		//next();
 	}
 
 	private void breakStat() {
