@@ -356,7 +356,7 @@ public class Compiler {
 				
 				if (type instanceof Field) {
 					Field variavel = (Field)type;
-					error("Method " + variavel.getIdList().get(0) + " has name equal to an instance variable");
+					error("Method " /*+ variavel.getIdList().get(0)*/ + " has name equal to an instance variable");
 				}
 			}
 			
@@ -749,17 +749,38 @@ public class Compiler {
 						next();
 						if(lexer.token == Token.ID) {
 							nameVar = lexer.getStringValue();
-							if(symbolTable.get(nameVar) == null) {
-								error("Variable '"+nameVar+"' was not declared");
+							Object type;
+							if((type = symbolTable.getInGlobal(currentClass)) == null) {
+								error("Classe atual não existe");
 							}
+							
+							CianetoClass novaClasse = (CianetoClass)type;
+							
+							if(!existeMetodoClasseSuperClasses(novaClasse, nameVar))
+								error("Method '" + nameVar + "' was not found in its superclasses");
+							
 							next();
+							
+							
+							
 							break;
 						}else if(lexer.token == Token.IDCOLON) {
 							nameVar = lexer.getStringValue();
 							nameVar = nameVar.substring(0,nameVar.length() - 1);
-							if(symbolTable.get(nameVar) == null) {
+							/*if(symbolTable.get(nameVar) == null) {
 								error("Variable '"+nameVar+"' was not declared");
+							}*/
+							nameVar = lexer.getStringValue();
+							Object type;
+							if((type = symbolTable.getInGlobal(currentClass)) == null) {
+								error("Classe atual não existe");
 							}
+							
+							CianetoClass novaClasse = (CianetoClass)type;
+							
+							if(!existeMetodoClasseSuperClasses(novaClasse, nameVar))
+								error("Method '" + nameVar + "' was not found in its superclasses");
+							
 							next();
 							expressionList();
 							break;
@@ -816,11 +837,12 @@ public class Compiler {
 							boolean existeMetodo = true;
 							
 							ArrayList<Method> metodosPublicos =  classeVariavel.getPublicMethodList();
-							
-							for (Method metodo : metodosPublicos) {
-								if(metodo.getId().equals(nameVar)) {
-									existeMetodo = true;
-									break;
+							if (metodosPublicos != null) {
+								for (Method metodo : metodosPublicos) {
+									if(metodo.getId().equals(nameVar)) {
+										existeMetodo = true;
+										break;
+									}
 								}
 							}
 							
@@ -860,10 +882,12 @@ public class Compiler {
 							
 							ArrayList<Method> metodosPublicos =  classeVariavel.getPublicMethodList();
 							
-							for (Method metodo : metodosPublicos) {
-								if(metodo.getId().equals(nameVar)) {
-									existeMetodo = true;
-									break;
+							if (metodosPublicos != null) {
+								for (Method metodo : metodosPublicos) {
+									if(metodo.getId().equals(nameVar)) {
+										existeMetodo = true;
+										break;
+									}
 								}
 							}
 							
