@@ -687,8 +687,41 @@ public class Compiler {
 				next();
 				if(lexer.token == Token.ID) {
 					nameVar = lexer.getStringValue();
-					if(symbolTable.getInLocalClass(nameVar) == null) {
-						error("Variable '"+nameVar+"' was not declared");
+					if(symbolTable.getInLocalClass(nameVar) != null) {
+						//error("Variable '"+nameVar+"' was not declared");
+					} else {
+						Object type;
+						if((type = symbolTable.getInGlobal(currentClass)) == null) {
+							error("Class atual não existe");
+						}
+						
+						CianetoClass classe = (CianetoClass)type;
+						ArrayList<Method> listaMetodosPrivados = classe.getPrivateMethodList();
+						ArrayList<Method> listaMetodosPublicos = classe.getPublicMethodList();
+						
+						boolean existeMetodo = false;
+						
+						if(listaMetodosPrivados != null) {
+							for (Method metodo : listaMetodosPrivados) {
+								if(metodo.getId().equals(nameVar)) {
+									existeMetodo = true;
+									break;
+								}
+							}
+						}
+						
+						if(listaMetodosPublicos != null) {
+							for (Method metodo : listaMetodosPublicos) {
+								if(metodo.getId().equals(nameVar)) {
+									existeMetodo = true;
+									break;
+								}
+							}
+						}
+						
+						if(!existeMetodo && !existeMetodoClasseSuperClasses(classe, nameVar))
+							error("Method " + nameVar + " was not found in class or its superclasses");
+					
 					}
 					next();
 					if(lexer.token == Token.DOT) {
@@ -715,8 +748,45 @@ public class Compiler {
 					}else if(lexer.token == Token.IDCOLON) {
 						nameVar = lexer.getStringValue();
 						nameVar = nameVar.substring(0, nameVar.length() - 1);
-						if(symbolTable.get(nameVar) == null) {
+						/*if(symbolTable.get(nameVar) == null) {
 							error("Variable '"+nameVar+"' was not declared");
+						}*/
+						
+						if(symbolTable.getInLocalClass(nameVar) != null) {
+							//error("Variable '"+nameVar+"' was not declared");
+						} else {
+							Object type;
+							if((type = symbolTable.getInGlobal(currentClass)) == null) {
+								error("Class atual não existe");
+							}
+							
+							CianetoClass classe = (CianetoClass)type;
+							ArrayList<Method> listaMetodosPrivados = classe.getPrivateMethodList();
+							ArrayList<Method> listaMetodosPublicos = classe.getPublicMethodList();
+							
+							boolean existeMetodo = false;
+							
+							if(listaMetodosPrivados != null) {
+								for (Method metodo : listaMetodosPrivados) {
+									if(metodo.getId().equals(nameVar)) {
+										existeMetodo = true;
+										break;
+									}
+								}
+							}
+							
+							if(listaMetodosPublicos != null) {
+								for (Method metodo : listaMetodosPublicos) {
+									if(metodo.getId().equals(nameVar)) {
+										existeMetodo = true;
+										break;
+									}
+								}
+							}
+							
+							if(!existeMetodo && !existeMetodoClasseSuperClasses(classe, nameVar))
+								error("Method " + nameVar + " was not found in class or its superclasses");
+						
 						}
 						next();
 						expressionList();
@@ -725,7 +795,7 @@ public class Compiler {
 				}
 					
 					break;
-				
+			case SUPER:
 			case ID:
 				if(lexer.getStringValue().equals("nil")) {
 					next();
@@ -749,6 +819,7 @@ public class Compiler {
 						next();
 						if(lexer.token == Token.ID) {
 							nameVar = lexer.getStringValue();
+							nameVar = nameVar.substring(0,nameVar.length() - 1);
 							Object type;
 							if((type = symbolTable.getInGlobal(currentClass)) == null) {
 								error("Classe atual não existe");
@@ -770,7 +841,6 @@ public class Compiler {
 							/*if(symbolTable.get(nameVar) == null) {
 								error("Variable '"+nameVar+"' was not declared");
 							}*/
-							nameVar = lexer.getStringValue();
 							Object type;
 							if((type = symbolTable.getInGlobal(currentClass)) == null) {
 								error("Classe atual não existe");
@@ -1181,10 +1251,12 @@ public class Compiler {
 			classeBusca = classeBusca.getSuperclass();
 			ArrayList<Method> listaDeMetodos = classeBusca.getPublicMethodList();
 			
-			for (Method method : listaDeMetodos) {
-				if (method.getId().equals(nomeMetodo))
-					return true;
-			}			
+			if (listaDeMetodos != null){
+				for (Method method : listaDeMetodos) {
+					if (method.getId().equals(nomeMetodo))
+						return true;
+				}			
+			}
 		}
 		return false;
 	}
