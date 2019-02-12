@@ -39,6 +39,7 @@ public class Compiler {
 		Program program = null;
 		programClassExists = false;
 		currentClass = null;
+		metodoAtual = null;
 		countWhile = 0;
 		countRepeat = 0;
 		metodoTemRetorno = false;
@@ -331,6 +332,7 @@ public class Compiler {
 				// Retira o ':' do nome do metodo
 				nomeMetodo = lexer.getStringValue();
 				nomeMetodo = nomeMetodo.substring(0, nomeMetodo.length() - 1);
+				metodoAtual = nomeMetodo;
 				
 				// Verifica se o método run de Program possui parâmetros
 				if (currentClass.equals("Program") && nomeMetodo.equals("run"))
@@ -342,6 +344,7 @@ public class Compiler {
 		//System.out.println(lexer.token+" AQUI");
 		}else if ( lexer.token == Token.ID ) {
 			nomeMetodo = lexer.getStringValue();
+			metodoAtual = nomeMetodo;
 			
 			// Verifica se o método está sendo sobrescrito
 			Object type;
@@ -417,6 +420,7 @@ public class Compiler {
 		next();
 		
 		symbolTable.removeLocalIdent();
+		metodoAtual = null;
 		return novo;
 	}
 
@@ -795,7 +799,9 @@ public class Compiler {
 						nameVar = lexer.getStringValue();
 						
 						// Verifica se é uma variável local e caso seja é verificado se o tipo é de alguma classe
-						if (!(type instanceof LocalDec)) {
+						/*if(nameVar.equals(metodoAtual)) {
+							
+						} else */if (!(type instanceof LocalDec)) {
 							error("Message send to a non-object receiver");
 						}else {
 							LocalDec variavelLocal = (LocalDec)type;
@@ -836,7 +842,9 @@ public class Compiler {
 						
 						//Object type2;
 						
-						if (!(type instanceof LocalDec)) {
+						if(nameVar.equals(metodoAtual)) {
+							
+						} else if (!(type instanceof LocalDec)) {
 							error("Message send to a non-object receiver");
 						} else {
 							LocalDec variavelLocal = (LocalDec)type;
@@ -1168,6 +1176,7 @@ public class Compiler {
 	private int countRepeat;
 	private boolean metodoTemRetorno;
 	private int countReturns;
+	private String metodoAtual;
 	//private String tipoRetorno;
 
 }
