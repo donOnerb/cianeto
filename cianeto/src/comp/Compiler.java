@@ -472,6 +472,7 @@ public class Compiler {
 			breakStat();
 			break;
 		case SEMICOLON:
+			checkSemiColon = false;
 			next();
 			break;
 		case REPEAT:
