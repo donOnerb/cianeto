@@ -892,7 +892,35 @@ public class Compiler {
 						// Verifica se é uma variável local e caso seja é verificado se o tipo é de alguma classe
 						/*if(nameVar.equals(metodoAtual)) {
 							
-						} else */if (!(type instanceof LocalDec)) {
+						} else */
+						
+						if (type instanceof Field) {
+							Field parametro = (Field)type;
+							String nomeTipo = parametro.getCName();
+							Object typeParametro;
+							if((typeParametro = symbolTable.getInGlobal(nomeTipo)) == null) {
+								error("Message send to a non-object receiver");
+							}
+							
+							// Verifica se o método existe na classe ou nas classes mães
+							CianetoClass classeVariavel = (CianetoClass)typeParametro;
+							boolean existeMetodo = false;
+							
+							ArrayList<Method> metodosPublicos =  classeVariavel.getPublicMethodList();
+							
+							if (metodosPublicos != null) {
+								for (Method metodo : metodosPublicos) {
+									if(metodo.getId().equals(nameVar)) {
+										existeMetodo = true;
+										break;
+									}
+								}
+							}
+							
+							if(!existeMetodo && !existeMetodoClasseSuperClasses(classeVariavel, nameVar))
+								error("Method " + nameVar + " not found");
+							
+						}else if (!(type instanceof LocalDec)) {
 							error("Message send to a non-object receiver");
 						}else {
 							LocalDec variavelLocal = (LocalDec)type;
@@ -932,9 +960,34 @@ public class Compiler {
 						nameVar = lexer.getStringValue();
 						nameVar = nameVar.substring(0,nameVar.length() - 1);
 						
-						//Object type2;
-						
 						if(nameVar.equals(metodoAtual)) {
+							
+						} else if(type instanceof Field) {
+							Field parametro = (Field)type;
+							String nomeTipo = parametro.getCName();
+							Object typeParametro;
+							if((typeParametro = symbolTable.getInGlobal(nomeTipo)) == null) {
+								error("Message send to a non-object receiver");
+							}
+							
+							// Verifica se o método existe na classe ou nas classes mães
+							CianetoClass classeVariavel = (CianetoClass)typeParametro;
+							boolean existeMetodo = false;
+							
+							ArrayList<Method> metodosPublicos =  classeVariavel.getPublicMethodList();
+							
+							if (metodosPublicos != null) {
+								for (Method metodo : metodosPublicos) {
+									if(metodo.getId().equals(nameVar)) {
+										existeMetodo = true;
+										break;
+									}
+								}
+							}
+							
+							if(!existeMetodo && !existeMetodoClasseSuperClasses(classeVariavel, nameVar))
+								error("Method " + nameVar + " not found");
+							
 							
 						} else if (!(type instanceof LocalDec)) {
 							error("Message send to a non-object receiver");
@@ -948,7 +1001,7 @@ public class Compiler {
 							
 							// Verifica se o método existe na classe ou nas classes mães
 							CianetoClass classeVariavel = (CianetoClass)typeLocalDec;
-							boolean existeMetodo = true;
+							boolean existeMetodo = false;
 							
 							ArrayList<Method> metodosPublicos =  classeVariavel.getPublicMethodList();
 							
