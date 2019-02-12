@@ -42,6 +42,7 @@ public class Compiler {
 		countWhile = 0;
 		countRepeat = 0;
 		metodoTemRetorno = false;
+		countReturns = 0;
 		
 		lexer.nextToken();
 		
@@ -406,10 +407,11 @@ public class Compiler {
 			error("'}' expected");
 		}
 		
-		if ( returnRequiredFlag ) {
+		if ( returnRequiredFlag && countReturns == 0 ) {
 			error("missing 'return' statement");
 		}
 		
+		countReturns = 0;
 		returnRequiredFlag = false;
 		
 		next();
@@ -548,14 +550,13 @@ public class Compiler {
 
 	private void breakStat() {
 		next();
-
 	}
 
 	private void returnStat() {
 		//System.out.println("NEM AQUI TO ENTRANDO");
 		next();
 		expr();
-		returnRequiredFlag = false;
+		countReturns++;
 	}
 
 	private void whileStat() {
@@ -833,15 +834,44 @@ public class Compiler {
 						nameVar = lexer.getStringValue();
 						nameVar = nameVar.substring(0,nameVar.length() - 1);
 						
-						Object type2;
-						if((type2 = symbolTable.getInLocalClass(nameVar)) == null) {
+						//Object type2;
+						
+						if (!(type instanceof LocalDec)) {
+							error("Message send to a non-object receiver");
+						} else {
+							LocalDec variavelLocal = (LocalDec)type;
+							String nomeTipo = variavelLocal.getCName();
+							Object typeLocalDec;
+							if((typeLocalDec = symbolTable.getInGlobal(nomeTipo)) == null) {
+								error("Message send to a non-object receiver");
+							}
+							
+							// Verifica se o método existe na classe ou nas classes mães
+							CianetoClass classeVariavel = (CianetoClass)typeLocalDec;
+							boolean existeMetodo = true;
+							
+							ArrayList<Method> metodosPublicos =  classeVariavel.getPublicMethodList();
+							
+							for (Method metodo : metodosPublicos) {
+								if(metodo.getId().equals(nameVar)) {
+									existeMetodo = true;
+									break;
+								}
+							}
+							
+							if(!existeMetodo && !existeMetodoClasseSuperClasses(classeVariavel, nameVar))
+								error("Method " + nameVar + " not found");
+						}
+						
+						
+						/*if((type2 = symbolTable.getInLocalClass(nameVar)) == null) {
 							error("Variable '"+nameVar+"' was not declared");
 						}
 						
 						
 						if(!(type2 instanceof Method)) {
 							error("Variable '"+nameVar+"' was not declared");
-						}
+						}*/
 						
 						next();
 						expressionList();
@@ -1137,6 +1167,7 @@ public class Compiler {
 	private int countWhile;
 	private int countRepeat;
 	private boolean metodoTemRetorno;
+	private int countReturns;
 	//private String tipoRetorno;
 
 }

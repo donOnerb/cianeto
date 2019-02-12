@@ -1,10 +1,12 @@
 Relatório do Compilador
 
-29 de um total de 134 erros que deveriam ser sinalizados não o foram (21%)
-6 erros foram sinalizados na linha errada (4%)
-32 erros foram sinalizados em 66 arquivos sem erro (48%)
+32 de um total de 134 erros que deveriam ser sinalizados não o foram (23%)
+4 erros foram sinalizados na linha errada (2%)
+24 erros foram sinalizados em 66 arquivos sem erro (36%)
 
 Erros que deveriam ser sinalizados mas não foram:
+
+ER-SEM-EXTRA02.ci, 36, 
 
 ER-SEM04.ci, 11, Type error: value of the right-hand side is not subtype of the variable of the left-hand side. (comp.Compiler.assignExprLocalDec())
 
@@ -34,6 +36,8 @@ ER-SEM34.ci, 23, Message send 'a.m()' returns a value that is not used (comp.Com
 
 ER-SEM36.ci, 25, Expression expected in the right-hand side of assignment (comp.Compiler.assignExprLocalDec())
 
+ER-SEM37.ci, 25, Method 'set' was not found in class 'A' or its superclasses (comp.Compiler.factor())
+
 ER-SEM38.ci, 20, Type error: type of the right-hand side of the assignment is not a subclass of the left-hand side (comp.Compiler.assignExprLocalDec())
 
 ER-SEM39.ci, 23, Type error: type of the expression returned is not subclass of the method return type (comp.Compiler.returnStatement())
@@ -45,6 +49,8 @@ ER-SEM42.ci, 15, Type error: type of the left-hand side of the assignment is a b
 ER-SEM43.ci, 11, Type error: 'nil' cannot be assigned to a variable of a basic type (comp.Compiler.assignExprLocalDec())
 
 ER-SEM44.ci, 26, Command 'write' does not accept objects (comp.Compiler.writeStatement())
+
+ER-SEM51.ci, 20, Method 'put' is being redefined in subclass 'B' with a signature different from the method of superclass 'A' (comp.Compiler.methodDec())
 
 ER-SEM52.ci, 11, 'override' expected before overridden method
 
@@ -71,14 +77,6 @@ ER-SEM40.ci
     correto:    50, Type error: the type of the real parameter is not subclass of the type of the formal parameter (comp.Compiler.factor())
     sinalizado: 34, a lot of thing was expected and get super
 
-ER-SEM51.ci
-    correto:    20, Method 'put' is being redefined in subclass 'B' with a signature different from the method of superclass 'A' (comp.Compiler.methodDec())
-    sinalizado: 29, Variable 'put' was not declared
-
-ER-SIN-EXTRA02.ci
-    correto:    40,  
-    sinalizado: 36, Variable 'setName' was not declared
-
 ER-SIN20.ci
     correto:    6, ';' missing 
     sinalizado: 7, ';' missing
@@ -94,21 +92,15 @@ ER-SIN22.ci
 ######################################################
 Erros que foram sinalizados mas não deveriam ter sido:
 
-ok-calc.ci, 35, Illegal 'return' statement. Method returns 'void'
-
 OK-CHK07.ci, 79, Variable 'getName' was not declared
 
-ok-fact.ci, 30, Illegal 'return' statement. Method returns 'void'
+ok-fact.ci, 28, Source code without a class 'Program'
 
-ok-fib.ci, 30, Illegal 'return' statement. Method returns 'void'
-
-OK-GER08.ci, 45, Variable 'm1' was not declared
+ok-fib.ci, 28, Source code without a class 'Program'
 
 OK-GER09.ci, 30, a lot of thing was expected and get super
 
 OK-GER10.ci, 41, a lot of thing was expected and get super
-
-OK-GER11.ci, 53, Variable 'm2' was not declared
 
 OK-GER12.ci, 32, a lot of thing was expected and get super
 
@@ -122,19 +114,11 @@ OK-GER21.ci, 24, Variable 'get' was not declared
 
 OK-GER22.ci, 27, ';' missing
 
-ok-math.ci, 33, Illegal 'return' statement. Method returns 'void'
-
 ok-queue.ci, 27, Variable 'print' was not declared
 
 OK-SEM05.ci, 33, a lot of thing was expected and get super
 
-OK-SEM06.ci, 36, Variable 'set' was not declared
-
-OK-SEM08.ci, 53, Variable 'put' was not declared
-
-OK-SEM09.ci, 30, Variable 'm' was not declared
-
-OK-SEM10.ci, 45, Variable 'first' was not declared
+OK-SEM09.ci, 17, Source code without a class 'Program'
 
 OK-SEM12.ci, 23, Source code without a class 'Program'
 
@@ -145,8 +129,6 @@ ok-sem17.ci, 19, ';' missing
 OK-SEM18.ci, 23, ';' missing
 
 OK-SIN02.ci, 31, ';' missing
-
-OK-SIN08.ci, 24, Variable 'm' was not declared
 
 OK-SIN09.ci, 29, Variable 'm2' was not declared
 
@@ -203,11 +185,6 @@ The compiler message was: "Variable 'result' was not declared"
 The 'cep' message is:      ""
 
 
-ER-SEM-EXTRA02.ci
-The compiler message was: "Variable 'se' was not declared"
-The 'cep' message is:      ""
-
-
 ER-SEM01.ci
 The compiler message was: "missing 'return' statement"
 The 'cep' message is:      "Missing 'return' statement in method 'm'"
@@ -229,7 +206,7 @@ The 'cep' message is:      "Message send to a non-object receiver"
 
 
 er-sem100.ci
-The compiler message was: "Variable 'set' was not declared"
+The compiler message was: "Variable 'error' was not declared"
 The 'cep' message is:      "Identifer 'error' was not found"
 
 
@@ -316,11 +293,6 @@ The 'cep' message is:      "Method 'm' is being redeclared"
 ER-SEM35.ci
 The compiler message was: "Illegal 'return' statement. Method returns 'void'"
 The 'cep' message is:      "Illegal 'return' statement. Method returns 'void'"
-
-
-ER-SEM37.ci
-The compiler message was: "Variable 'set' was not declared"
-The 'cep' message is:      "Method 'set' was not found in class 'A' or its superclasses"
 
 
 ER-SEM45.ci
@@ -435,6 +407,11 @@ The 'cep' message is:      "'{' expected"
 
 ER-SIN-EXTRA01.ci
 The compiler message was: "'{' expected"
+The 'cep' message is:      ""
+
+
+ER-SIN-EXTRA02.ci
+The compiler message was: "'end' expected and get ~eof"
 The 'cep' message is:      ""
 
 
