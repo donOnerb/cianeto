@@ -400,7 +400,20 @@ public class Compiler {
 		
 		novo = new Method(parametros, tipo, nomeMetodo, qualifierEncapsulation, qualifierOverride, qualifierFinal);
 		symbolTable.putInLocalClass(novo.getId(), novo);
-				
+		
+		// Verifica se o método está sendo sobreescrico
+		Object type;
+		if((type = symbolTable.getInGlobal(currentClass)) == null)
+			error("Classe atual nao existe");
+		
+		CianetoClass novaClasse = (CianetoClass)type;
+		
+		if (existeMetodoClasseSuperClasses(novaClasse, nomeMetodo)) {
+			if(novo.getQualifierOverride() != Token.OVERRIDE)
+				error("'override' expected before overridden method");
+		}
+		
+		
 		if ( lexer.token != Token.LEFTCURBRACKET ) {
 			error("'{' expected");
 		}
