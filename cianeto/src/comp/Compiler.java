@@ -8,6 +8,7 @@ package comp;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import ast.CianetoClass;
 import ast.Field;
@@ -39,6 +40,7 @@ public class Compiler {
 		programClassExists = false;
 		currentClass = null;
 		countWhile = 0;
+		countRepeat = 0;
 		
 		lexer.nextToken();
 		
@@ -442,15 +444,17 @@ public class Compiler {
 			break;
 		case BREAK:
 			// Caso não esteja em nenhum while é exibida mensagem de erro
-			if (this.countWhile == 0)
-				error("'break' statement found outside a 'while' statement");
+			if ((this.countWhile+this.countRepeat) == 0)
+				error("'break' statement found outside a 'while' or 'repeat' statement");
 			breakStat();
 			break;
 		case SEMICOLON:
 			next();
 			break;
 		case REPEAT:
+			countRepeat++;
 			repeatStat();
+			countRepeat--;
 			break;
 		case VAR:
 			localDec();
@@ -695,7 +699,7 @@ public class Compiler {
 							next();
 							expressionList();
 						}else {
-							error("identifier or identifeircolon was expected and get " +lexer.token);
+							error("identifier or identifeir colon was expected and get " +lexer.token);
 						}
 					}
 							
@@ -761,9 +765,13 @@ public class Compiler {
 					break;
 				}
 				nameVar = lexer.getStringValue();
-				if(symbolTable.get(nameVar) == null) {
-					error("Variable '"+nameVar+"' was not declared");
+				Object type;
+				if((type = symbolTable.getInLocal(nameVar)) == null) {
+					if ((type = symbolTable.getInGlobal(nameVar)) == null) {
+						error("Variable '"+nameVar+"' was not declared");
+					}
 				}
+				
 				next();
 				if(lexer.token == Token.DOT) {
 					next();
@@ -773,21 +781,64 @@ public class Compiler {
 					}
 					
 					if(lexer.token == Token.NEW) {
+						if(!(type instanceof CianetoClass))
+							error("Type doesn't accept constructor");
+						
 						next();
 						break;
 					}else if(lexer.token == Token.ID) {
 						nameVar = lexer.getStringValue();
-						if(symbolTable.get(nameVar) == null) {
-							error("Variable '"+nameVar+"' was not declared");
+						
+						// Verifica se é uma variável local e caso seja é verificado se o tipo é de alguma classe
+						if (!(type instanceof LocalDec)) {
+							error("Message send to a non-object receiver");
+						}else {
+							LocalDec variavelLocal = (LocalDec)type;
+							String nomeTipo = variavelLocal.getType().getName();
+							Object typeLocalDec;
+							if((typeLocalDec = symbolTable.getInGlobal(nomeTipo)) == null) {
+								error("Message send to a non-object receiver");
+							}
+							
+							// Verifica se o método existe na classe ou nas classes mães
+							CianetoClass classeVariavel = (CianetoClass)typeLocalDec;
+							boolean existeMetodo = true;
+							
+							ArrayList<Method> metodosPublicos =  classeVariavel.getPublicMethodList();
+							
+							for (Method metodo : metodosPublicos) {
+								if(metodo.getId().equals(nameVar)) {
+									existeMetodo = true;
+									break;
+								}
+							}
+							
+							if(!existeMetodo || !existeMetodoClasseSuperClasses(classeVariavel, nameVar))
+								error("Method " + nameVar + " not found");
+						}
+						
+						// Procurar primeiro na hash local e depois na hash da classe
+						if(symbolTable.getInLocal(nameVar) == null) {
+							if(symbolTable.getInLocalClass(nameVar) == null) {
+								error("Variable '"+nameVar+"' was not declared");
+							}
 						}
 						next();
 						break;
 					}else if(lexer.token == Token.IDCOLON) {
 						nameVar = lexer.getStringValue();
 						nameVar = nameVar.substring(0,nameVar.length() - 1);
-						if(symbolTable.get(nameVar) == null) {
+						
+						Object type2;
+						if((type2 = symbolTable.getInLocalClass(nameVar)) == null) {
 							error("Variable '"+nameVar+"' was not declared");
 						}
+						
+						
+						if(!(type2 instanceof Method)) {
+							error("Variable '"+nameVar+"' was not declared");
+						}
+						
 						next();
 						expressionList();
 						break;
@@ -938,6 +989,12 @@ public class Compiler {
 			lexer.nextToken();
 		}
 		else if ( lexer.token == Token.ID ) {
+			String nomeTipo = lexer.getStringValue();
+			Object type;
+			if((type = symbolTable.getInGlobal(nomeTipo)) == null) {
+				error("Type " + nomeTipo + " was not found"); 
+			}
+			
 			tipo = new CianetoClass(lexer.getLiteralStringValue());
 			lexer.nextToken();
 		}
@@ -1051,6 +1108,21 @@ public class Compiler {
 		return null;
 	}
 	
+	private boolean existeMetodoClasseSuperClasses(CianetoClass classe, String nomeMetodo){
+		CianetoClass classeBusca = classe;  
+		
+		while (classeBusca.getSuperclass() != null){
+			classeBusca = classeBusca.getSuperclass();
+			ArrayList<Method> listaDeMetodos = classeBusca.getPublicMethodList();
+			
+			for (Method method : listaDeMetodos) {
+				if (method.getId().equals(nomeMetodo))
+					return true;
+			}			
+		}
+		return false;
+	}
+	
 
 	private SymbolTable		symbolTable;
 	private Lexer			lexer;
@@ -1059,6 +1131,7 @@ public class Compiler {
 	private boolean programClassExists;
 	private String currentClass;
 	private int countWhile;
+	private int countRepeat;
 	//private String tipoRetorno;
 
 }
