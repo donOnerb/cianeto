@@ -1074,9 +1074,7 @@ public class Compiler {
 		while(lexer.token == Token.COMMA) {
 			next();
 			expr();
-		}
-		
-		
+		}	
 	}
 	
 	private ArrayList<ParamDec> formalParamDec() {
@@ -1265,8 +1263,8 @@ public class Compiler {
 		}
 		String message = lexer.getLiteralStringValue();
 		lexer.nextToken();
-		if ( lexer.token == Token.SEMICOLON )
-			lexer.nextToken();
+		//if ( lexer.token == Token.SEMICOLON )
+		//	lexer.nextToken();
 
 		return null;
 	}
