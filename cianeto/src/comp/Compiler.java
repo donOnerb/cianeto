@@ -743,8 +743,12 @@ public class Compiler {
 					next();
 					if(lexer.token == Token.DOT) {
 						next();
-						if(lexer.token == Token.ID) {
+						
+						if(lexer.getStringValue().equals("print")) {
+							next();
+						}else if(lexer.token == Token.ID) {
 							nameVar = lexer.getStringValue();
+							
 							if(symbolTable.get(nameVar) == null) {
 								error("Variable '"+nameVar+"' was not declared");
 							}
@@ -765,9 +769,6 @@ public class Compiler {
 					}else if(lexer.token == Token.IDCOLON) {
 						nameVar = lexer.getStringValue();
 						nameVar = nameVar.substring(0, nameVar.length() - 1);
-						/*if(symbolTable.get(nameVar) == null) {
-							error("Variable '"+nameVar+"' was not declared");
-						}*/
 						
 						if(symbolTable.getInLocalClass(nameVar) != null) {
 							//error("Variable '"+nameVar+"' was not declared");
