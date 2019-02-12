@@ -12,6 +12,7 @@ public class Field {
 		this.type = type;
 		this.idList = idList;
 		this.qualifier = qualifier;
+		this.name = type.getCname();
 	}
 	
 	public Field() {
@@ -38,7 +39,12 @@ public class Field {
 	public void setIdList(ArrayList<String> idList) {
 		this.idList = idList;
 	}
+	
+	public String getCName() {
+		return name;
+	}
 
+	private String name;
 	Token qualifier;
 	Type type;
 	ArrayList<String> idList;
