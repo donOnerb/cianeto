@@ -12,6 +12,7 @@ public class LocalDec extends Statement {
 		this.expr = expr;
 		this.type = type;
 		this.idList = idList;
+		this.name = type.getCname();
 	}
 	public void genC(PW pw) {
 		
@@ -41,6 +42,11 @@ public class LocalDec extends Statement {
 		this.idList = idList;
 	}
 
+	public String getCName() {
+		return name;
+	}
+	
+	private String name;
 	private Expr expr;
 	private Type type;
 	private ArrayList<String> idList;

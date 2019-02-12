@@ -41,6 +41,7 @@ public class Compiler {
 		currentClass = null;
 		countWhile = 0;
 		countRepeat = 0;
+		metodoTemRetorno = false;
 		
 		lexer.nextToken();
 		
@@ -439,6 +440,9 @@ public class Compiler {
 			break;
 		case RETURN:
 			//this.returnRequiredFlag = false;
+			if(!returnRequiredFlag)
+				error("Illegal 'return' statement. Method returns 'void'");
+				
 			returnStat();
 			//checkSemiColon = false;
 			break;
@@ -794,7 +798,7 @@ public class Compiler {
 							error("Message send to a non-object receiver");
 						}else {
 							LocalDec variavelLocal = (LocalDec)type;
-							String nomeTipo = variavelLocal.getType().getName();
+							String nomeTipo = variavelLocal.getCName();
 							Object typeLocalDec;
 							if((typeLocalDec = symbolTable.getInGlobal(nomeTipo)) == null) {
 								error("Message send to a non-object receiver");
@@ -813,16 +817,16 @@ public class Compiler {
 								}
 							}
 							
-							if(!existeMetodo || !existeMetodoClasseSuperClasses(classeVariavel, nameVar))
+							if(!existeMetodo && !existeMetodoClasseSuperClasses(classeVariavel, nameVar))
 								error("Method " + nameVar + " not found");
 						}
 						
 						// Procurar primeiro na hash local e depois na hash da classe
-						if(symbolTable.getInLocal(nameVar) == null) {
+						/*if(symbolTable.getInLocal(nameVar) == null) {
 							if(symbolTable.getInLocalClass(nameVar) == null) {
 								error("Variable '"+nameVar+"' was not declared");
 							}
-						}
+						}*/
 						next();
 						break;
 					}else if(lexer.token == Token.IDCOLON) {
@@ -995,7 +999,7 @@ public class Compiler {
 				error("Type " + nomeTipo + " was not found"); 
 			}
 			
-			tipo = new CianetoClass(lexer.getLiteralStringValue());
+			tipo = new CianetoClass(nomeTipo);
 			lexer.nextToken();
 		}
 		else {
@@ -1132,6 +1136,7 @@ public class Compiler {
 	private String currentClass;
 	private int countWhile;
 	private int countRepeat;
+	private boolean metodoTemRetorno;
 	//private String tipoRetorno;
 
 }
