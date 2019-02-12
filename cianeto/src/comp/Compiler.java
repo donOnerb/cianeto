@@ -819,7 +819,7 @@ public class Compiler {
 						next();
 						if(lexer.token == Token.ID) {
 							nameVar = lexer.getStringValue();
-							nameVar = nameVar.substring(0,nameVar.length() - 1);
+							//nameVar = nameVar.substring(0,nameVar.length() - 1);
 							Object type;
 							if((type = symbolTable.getInGlobal(currentClass)) == null) {
 								error("Classe atual não existe");
